@@ -7,13 +7,14 @@ options source nostimer nocenter pagesize = 60 linesize = 132 noquotelenmax orie
 mprint mlogic validvarname=v7 ;
 ods noproctitle;
 
-/*************************************************
+/**************************************************************************************************
 rm001_data.sas
+
 Prepare data for the analysis of the BRFSS survey
 
 Programmer: Ruben Montes de Oca
 CTP\OS\Statistics Branch
-**************************************************/
+***************************************************************************************************/
 
 %let program_name=rm001_data;
 
@@ -25,10 +26,12 @@ libname rm001 "S:\OS\StatisticsBranch\TeamT\Montes de Oca\rm001\data";
 
 %include "S:\OS\StatisticsBranch\Data Harmonization\BRFSS\programs\formats.sas";
 
+ods listing close;
+ods pdf file = "S:\OS\StatisticsBranch\TeamT\Montes de Oca\rm001\results\&program_name &sysdate9..pdf";
 
 ods listing close;
 ods tagsets.ExcelXP path="S:\OS\StatisticsBranch\TeamT\Montes de Oca\rm001\results\"
-            		body="&program_name XLSX &sysdate9..xml"
+            		body="&program_name &sysdate9..xml"
             		style=default;
 
 ods tagsets.excelxp options(sheet_interval='none' 
@@ -85,28 +88,14 @@ ods output OneWay=work.s00_temp;
 format sex sex.;
 run;
 
-ods tagsets.ExcelXP close;
-ods listing;
-
-
-
-
-ods listing close;
-ods pdf file = "S:\OS\StatisticsBranch\TeamT\Montes de Oca\rm001\results\&program_name RTF &sysdate9..pdf";
-
-title2 "C. Clean Analysis";
-
-data work.s00;
+data rm001.s00;
 set work.s00_temp;
 if sex=. then do; sex=0; end;
 run;
 
-proc tabulate missing format=comma20.0 data=work.s00;
-title3 "brfssH.CDBRFS00";
-class sex;
-var Frequency WgtFreq StdDev CVWgtFreq Percent StdErr;
-tables sex='Sex'*f=sex., sum='' *( (frequency WgtFreq) (Percent StdDev CVWgtFreq  StdErr)*f=comma20.2 );
-run;
+
+ods tagsets.ExcelXP close;
+ods listing;
 
 ods pdf;
 ods listing;
@@ -119,7 +108,10 @@ ods listing;
     input buffer $varying256. reclen; list ;
   run;
   %mend stamps;
+
   %stamps('dir "S:\OS\StatisticsBranch\Data Harmonization\BRFSS\Data\"');
+  %stamps('dir "S:\OS\StatisticsBranch\TeamT\Montes de Oca\rm001\data\"');
+
 
 options nomprint nomlogic;
 
