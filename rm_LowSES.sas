@@ -32,7 +32,7 @@ The solution values are not displayed unless you specify the SOLUTION option in 
 
 
 ods pdf file=
-"\\rm04_ITP\1-LowSES\CODE\results\&program_name &sysdate9..pdf";
+"\\fda.gov\WODC\CTP_Sandbox\OS\DPHS\StatisticsBranch\Team 2\Montes de Oca\rm04_ITP\1-LowSES\CODE\results\&program_name &sysdate9..pdf";
 
 ods pdf close;
 
@@ -42,7 +42,7 @@ RUN;
 
 **************************************************************************************************/
 
-libname LowSES "\\rm04_ITP\1-LowSES\data";
+libname LowSES "\\fda.gov\WODC\CTP_Sandbox\OS\DPHS\StatisticsBranch\Team 2\Montes de Oca\rm04_ITP\1-LowSES\data";
 
 proc format;
 
@@ -126,7 +126,7 @@ WideBlackRNC
 ;
 run;
 
-proc transpose data=work.SUBJECTS out=work.LONG0(rename=(_name_=visit));
+proc transpose data=work.SUBJECT out=work.LONG0(rename=(_name_=visit));
 var time1-time7;
 by subject arm race menthol;
 run;
@@ -210,12 +210,12 @@ by subject arm race menthol;
 run;
 
 proc export data= LowSES.LONG 
-outfile= "\\rm04_ITP\1-LowSES\data\LONG.csv"
+outfile= "\\fda.gov\WODC\CTP_Sandbox\OS\DPHS\StatisticsBranch\Team 2\Montes de Oca\rm04_ITP\1-LowSES\data\LONG.csv"
 dbms=csv replace;
 putnames=yes;
 run;
 
-ods pdf file="\\rm04_ITP\1-LowSES\code\results\&program_name &sysdate9..pdf";
+ods pdf file="\\fda.gov\WODC\CTP_Sandbox\OS\DPHS\StatisticsBranch\Team 2\Montes de Oca\rm04_ITP\1-LowSES\code\results\&program_name &sysdate9..pdf";
 
 proc print n noobs data=work.LONG;
 title3 "First subject in each arm:";
@@ -237,7 +237,7 @@ proc tabulate data=work.LONG;
 title3 "All 280 subjects, 140 in each arm (UNC, or RNC) by arm";
 class arm race;
 var LnCotinine: eLnCotinine: AvgCigs;
-tables (arm='ARM'*race='Race'), (eLnCotinine='Exp(Log(cotinine))' eLnCotinineB='Exp(Log(cotinineB))' AvgCigs)* 
+tables (arm='ARM'*race='Race'), (eLnCotinine='Exp(Log(cotinine))' AvgCigs)* 
 	(n='N'*f=4.0 (mean='MEAN' var='VAR')*f=6.3)/rts=15;
 format arm arm. race race.;
 run;
@@ -245,7 +245,7 @@ proc tabulate data=work.LONG;
 title3 "All 280 subjects, 140 in each arm (UNC, or RNC) by arm and time";
 class arm race time;
 var LnCotinine: eLnCotinine: AvgCigs;
-tables (arm='ARM'*race='Race'*time='Time'), (eLnCotinine='Exp(Log(cotinine))' eLnCotinineB='Exp(Log(cotinineB))' AvgCigs)* 
+tables (arm='ARM'*race='Race'*time='Time'), (eLnCotinine='Exp(Log(cotinine))' AvgCigs)* 
 	(n='N'*f=4.0 (mean='MEAN' var='VAR')*f=6.3)/rts=15;
 format arm arm. race race.;
 run;
@@ -259,14 +259,6 @@ proc print noobs data=covMatrix;
 title3 "Variance-covariance by arm:";
 where _type_='COV';
 run;
-proc corr data=wide cov outp=covMatrix noprint;
-by arm;
-var LNCOTININEB1 LNCOTININEB2 LNCOTININEB3 LNCOTININEB4 LNCOTININEB5 LNCOTININEB6 LNCOTININEB7;
-run;
-proc print noobs data=covMatrix;
-title3 "Variance-covariance by arm:";
-where _type_='COV';
-run;
 
 **checking normality:;
 proc sgpanel data=work.LONG;
@@ -274,12 +266,6 @@ title3 "Checking normality of Log(cotinine) by time and ARM:";
 panelby time arm/uniscale=row;**UNISCALE= ROW option specifies that only the shared row axes are identical;
 histogram lncotinine;
 density lncotinine;
-run;
-proc sgpanel data=work.LONG;
-title3 "Checking normality of Log(cotinineB) by time and ARM:";
-panelby time arm/uniscale=row;**UNISCALE= ROW option specifies that only the shared row axes are identical;
-histogram LnCotinineB;
-density LnCotinineB;
 run;
 
 **model is Log(cotinine)= intercept+ race+ menthol+ arm*(time0 to time6)+ SUBJECT(ARM)+ epsilon;
@@ -290,17 +276,11 @@ class race menthol arm time;
 model LnCotinine=race menthol arm*time/solution;
 random subject(arm)/solution;
 run;
-proc mixed data=work.LONG;
-title3 "COTININEB= intercept+ arm+ race+ menthol+ arm*(time0 to time6)+ SUBJECT(ARM)+ epsilon";
-title4 "with RANDOM SUBJECT(ARM) and epsilon N(0,S2)";
-class race menthol arm time;
-model LnCotinineB=race menthol arm*time/solution;
-random subject(arm)/solution;
-run;
 
 ods pdf close;
 
 /******************************************************************************************
-End of \\rm04_ITP\1-LowSES\code\rm_LowSES.sas
+End of \\fda.gov\WODC\CTP_Sandbox\OS\DPHS\StatisticsBranch\Team 2\Montes de Oca\
+	rm04_ITP\1-LowSES\code\rm_LowSES.sas
 ******************************************************************************************/
 
