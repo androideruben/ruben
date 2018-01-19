@@ -279,6 +279,32 @@ run;
 
 ods pdf close;
 
+arm=1
+RACE=1
+MENTHOL=1
+TIME1=1
+TIME2=0
+TIME3=0
+TIME4=0
+TIME5=0
+TIME6=0
+AvgCigs=18
+SUBJECT=1 
+
+y=1.1+ 
+0.3* RACE+ 
+0.0001* MENTHOL+ 
+0.001* TIME1+ 
+0.01* TIME2+ 
+0.001* TIME3
+0.0005* TIME4+ 
+0.0003* TIME5+ 
+0.0001* TIME6+ 
+0.02* AvgCigs+ 
+0.9* SUBJECT
+
+y
+
 /******************************************************************************************
 End of \\fda.gov\WODC\CTP_Sandbox\OS\DPHS\StatisticsBranch\Team 2\Montes de Oca\
 	rm04_ITP\1-LowSES\code\rm_LowSES.sas
