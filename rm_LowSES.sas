@@ -156,6 +156,8 @@ SUBJECT);
 data work.&dataout;
 set work.LONG0;
 
+if arm=&arm & race=&race & menthol=&menthol;
+
 if visit='time1' then do; time1=1; time2=0; time3=0; time4=0; time5=0; time6=0; time7=0; time=1; end;
 if visit='time2' then do; time1=0; time2=1; time3=0; time4=0; time5=0; time6=0; time7=0; time=2; end;
 if visit='time3' then do; time1=0; time2=0; time3=1; time4=0; time5=0; time6=0; time7=0; time=3; end;
@@ -193,13 +195,13 @@ proc sort; by subject time;
 run;
 
 proc print n noobs data=&dataout;
-title3 "data=&data where LnCotinine ne .";
+title3 "data=&dataout where LnCotinine ne .";
 where LnCotinine ne .;
 var subject time LnCotinine eLnCotinine mymean;
 run;
 
 %mend LONG;
-%long(data,arm,race,menthol,time1,time2,time3,time4,time5,time6,AvgCigs,SUBJECTEFFECTS);**coefficients;
+*%long(data,arm,race,menthol,time1,time2,time3,time4,time5,time6,AvgCigs,SUBJECTEFFECTS);**coefficients;
 
 **arm=1=RNC;
 %long(longR1, 1,   1,      1,    1,    0,    0,    0,    0,    0,     18,             1);
@@ -233,11 +235,13 @@ longu5
 longu6
 ;
 format LnCotinine eLnCotinine subjecteffect 6.3;
+
+proc sort; by arm subject;
 run;
 
-proc means mean data=long;
+proc means nmiss mean data=long;
 class arm race;
-var mymean LnCotinine;
+var mymean LnCotinine eLnCotinine;
 format arm arm. race race.;
 run;
  
@@ -250,10 +254,10 @@ set work.LONG;
 run;
 */
 
-proc transpose data=work.long out=work.WIDE(rename=(col1=LNCOTININE1 col2=LNCOTININE2 
+proc transpose data=work.long out=work.WIDE;*(rename=(col1=LNCOTININE1 col2=LNCOTININE2 
 col3=LNCOTININE3 col4=LNCOTININE4 col5=LNCOTININE5 col6=LNCOTININE6 col7=LNCOTININE7));
 var Lncotinine;
-by subject arm race menthol;
+by subject arm;
 run;
 
 proc export data= LowSES.LONG 
