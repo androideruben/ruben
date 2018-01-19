@@ -32,7 +32,7 @@ The solution values are not displayed unless you specify the SOLUTION option in 
 
 
 ods pdf file=
-"\\fda.gov\WODC\CTP_Sandbox\OS\DPHS\StatisticsBranch\Team 2\Montes de Oca\rm04_ITP\1-LowSES\CODE\results\&program_name &sysdate9..pdf";
+"\\rm04_ITP\1-LowSES\CODE\results\&program_name &sysdate9..pdf";
 
 ods pdf close;
 
@@ -42,7 +42,7 @@ RUN;
 
 **************************************************************************************************/
 
-libname LowSES "\\fda.gov\WODC\CTP_Sandbox\OS\DPHS\StatisticsBranch\Team 2\Montes de Oca\rm04_ITP\1-LowSES\data";
+libname LowSES "\\rm04_ITP\1-LowSES\data";
 
 proc format;
 
@@ -56,7 +56,7 @@ value race
 
 value menthol
 1='Yes menthol'
-0='No menthol'
+2='No menthol'
 ;
 
 run;
@@ -78,20 +78,7 @@ TIME=6=Visit1=Dose6
 TIME=7=Visit1=Dose7
 ;
 
-**Y=Exp(Log(COTININE))= 1.1+ 0.3 RACE+ 0.0001 MENTHOL+ 0.001 ARM*TIME1+ 0.01 ARM*TIME2+ 0.001 ARM*TIME3
-0.0005 ARM*TIME4+ 0.0003 ARM*TIME5+ 0.0001 ARM*TIME6+ 0.02 AvgCigs+ 0.9 SUBJECT(ARM)+ epsilon
-with RANDOM SUBJECT(ARM) and epsilon N(0,S2)
-
-
-Expected for:
-a) RACE=0, MENTHOL=0, 0=ARM*TIME1=ARM*TIME2=ARM*TIM3=ARM*TIME4=ARM*TIME5=ARM*TIME6, AvgCigs=any number, SUBJECT(ARM)=any number:
-
-
-
-;
-
-
-%macro repeated(data, startN, endN, race, arm, time0, time1, time2, time3, time4, time5, time6);
+%macro repeated(data, startN, endN, race, arm, time1, time2, time3, time4, time5, time6, time7);
 
 data work.&data;
 
@@ -109,13 +96,13 @@ do subject=&startN to &endN;
 		menthol=ranbin(1234,1,0.1)+1;**seed=1234;
 
 		**TIME:;
-		time0=&time0;
 		time1=&time1;
 		time2=&time2;
 		time3=&time3;
 		time4=&time4;
 		time5=&time5;
 		time6=&time6;
+		time7=&time7;
 
       output;
    end;
@@ -130,119 +117,75 @@ repeated(data, startN, endN, race, arm, dose0, dose1, dose2, dose3, dose4, dose5
 %repeated(WideWhiteRNC, 141, 210, 1, 1,  1, 1, 1, 1, 1, 1, 1);
 %repeated(WideBlackRNC, 211, 280, 0, 1,  1, 1, 1, 1, 1, 1, 1);
 
-%macro transpose(datain, dataout);
+data work.SUBJECT;
+set 
+WideWhiteUNC
+WideBlackUNC
+WideWhiteRNC
+WideBlackRNC
+;
+run;
 
-proc transpose data=work.&datain out=work.&dataout(drop=col1 rename=(_name_=visit));
-var time0-time6;
+proc transpose data=work.SUBJECTS out=work.LONG0(rename=(_name_=visit));
+var time1-time7;
 by subject arm race menthol;
 run;
 
-data work.&dataout;
-set work.&dataout;
+proc freq data=long0;
+tables arm race menthol;
+run;
 
-**LOG OF COTININE, AVERAGE NUMBER OF CIGARETTES PET VISIT:;
-***A normal variate X with mean MU and variance S2 can be generated with this code:
-x=MU+sqrt(S2)*rannor(seed);
+data work.LONG;
+set work.LONG0;
 
-**race=0=Black, arm=0=UNC: cotinine=0.07 and avgcigs=18;
-%let seed00=1200;
+if visit='time1' then time=1;
+if visit='time2' then time=2;
+if visit='time3' then time=3;
+if visit='time4' then time=4;
+if visit='time5' then time=5;
+if visit='time6' then time=6;
+if visit='time7' then time=7;
 
-if race=0 & arm=0 then do;
-if visit='time0' then do; Lncotinine=abs(0.07+sqrt(0.01)*rannor(&seed00)); AvgCigs=abs(18+sqrt(3)*rannor(&seed00)); end;
-if visit='time1' then do; Lncotinine=abs(0.07+sqrt(0.01)*rannor(&seed00)); AvgCigs=abs(18+sqrt(3)*rannor(&seed00)); end;
-if visit='time2' then do; Lncotinine=abs(0.07+sqrt(0.01)*rannor(&seed00)); AvgCigs=abs(18+sqrt(3)*rannor(&seed00)); end;
-if visit='time3' then do; Lncotinine=abs(0.07+sqrt(0.01)*rannor(&seed00)); AvgCigs=abs(18+sqrt(3)*rannor(&seed00)); end;
-if visit='time4' then do; Lncotinine=abs(0.07+sqrt(0.01)*rannor(&seed00)); AvgCigs=abs(18+sqrt(3)*rannor(&seed00)); end;
-if visit='time5' then do; Lncotinine=abs(0.07+sqrt(0.01)*rannor(&seed00)); AvgCigs=abs(18+sqrt(3)*rannor(&seed00)); end;
-if visit='time6' then do; Lncotinine=abs(0.07+sqrt(0.01)*rannor(&seed00)); AvgCigs=abs(18+sqrt(3)*rannor(&seed00)); end;
-end;
+**Y=Exp(Log(COTININE))= 1.1+ 0.3 RACE+ 0.0001 MENTHOL+ 0.001 ARM*TIME1+ 0.01 ARM*TIME2+ 0.001 ARM*TIME3
+0.0005 ARM*TIME4+ 0.0003 ARM*TIME5+ 0.0001 ARM*TIME6+ 0.02 AvgCigs+ 0.9 SUBJECT(ARM)+ epsilon
+with RANDOM SUBJECT(ARM) and epsilon N(0,S2)
 
-**race=0=Black, arm=1=RNC:: cotinine=0.06 and avgcigs=17;
-%let seed01=1201;
 
-if race=0 & arm=1 then do;
-if visit='time0' then do; Lncotinine=abs(0.06+sqrt(0.01)*rannor(&seed01)); AvgCigs=abs(17+sqrt(2)*rannor(&seed01)); end;
-if visit='time1' then do; Lncotinine=abs(0.06+sqrt(0.01)*rannor(&seed01)); AvgCigs=abs(17+sqrt(2)*rannor(&seed01)); end;
-if visit='time2' then do; Lncotinine=abs(0.06+sqrt(0.01)*rannor(&seed01)); AvgCigs=abs(17+sqrt(2)*rannor(&seed01)); end;
-if visit='time3' then do; Lncotinine=abs(0.06+sqrt(0.01)*rannor(&seed01)); AvgCigs=abs(17+sqrt(2)*rannor(&seed01)); end;
-if visit='time4' then do; Lncotinine=abs(0.06+sqrt(0.01)*rannor(&seed01)); AvgCigs=abs(17+sqrt(2)*rannor(&seed01)); end;
-if visit='time5' then do; Lncotinine=abs(0.06+sqrt(0.01)*rannor(&seed01)); AvgCigs=abs(17+sqrt(2)*rannor(&seed01)); end;
-if visit='time6' then do; Lncotinine=abs(0.06+sqrt(0.01)*rannor(&seed01)); AvgCigs=abs(17+sqrt(2)*rannor(&seed01)); end;
-end;
+A.- Expected for:
 
-**race=1=White, arm=0=UNC:;
-%let seed10=1210;
+0=RACE
+1=MENTHOL
+1=ARM
+1=ARM*TIME1
+0=ARM*TIME2
+0=ARM*TIM3
+0=ARM*TIME4
+0=ARM*TIME5
+0=ARM*TIME6
+x=AvgCigs=any number
+s=SUBJECT(ARM)=any number: 
 
-if race=1 & arm=0 then do;
-if visit='time0' then do; Lncotinine=abs(0.08+sqrt(0.01)*rannor(&seed10)); AvgCigs=abs(19+sqrt(3)*rannor(&seed10)); end;
-if visit='time1' then do; Lncotinine=abs(0.08+sqrt(0.01)*rannor(&seed10)); AvgCigs=abs(19+sqrt(3)*rannor(&seed10)); end;
-if visit='time2' then do; Lncotinine=abs(0.08+sqrt(0.01)*rannor(&seed10)); AvgCigs=abs(19+sqrt(3)*rannor(&seed10)); end;
-if visit='time3' then do; Lncotinine=abs(0.08+sqrt(0.01)*rannor(&seed10)); AvgCigs=abs(19+sqrt(3)*rannor(&seed10)); end;
-if visit='time4' then do; Lncotinine=abs(0.08+sqrt(0.01)*rannor(&seed10)); AvgCigs=abs(19+sqrt(3)*rannor(&seed10)); end;
-if visit='time5' then do; Lncotinine=abs(0.08+sqrt(0.01)*rannor(&seed10)); AvgCigs=abs(19+sqrt(3)*rannor(&seed10)); end;
-if visit='time6' then do; Lncotinine=abs(0.08+sqrt(0.01)*rannor(&seed10)); AvgCigs=abs(19+sqrt(3)*rannor(&seed10)); end;
-end;
+1.1+ 0+ 0.001+ 0+ 0+ 0+ 0+ 0+ 0.02+ 0.9= 2.021
+;
 
-**race=1=White, arm=1=RNC:;
-%let seed11=1211;
+AvgCigs=abs(18+sqrt(3)*rannor(2021));
 
-if race=1 & arm=1 then do;
-if visit='time0' then do; Lncotinine=abs(0.05+sqrt(0.01)*rannor(&seed11)); AvgCigs=abs(17+sqrt(2)*rannor(&seed11)); end;
-if visit='time1' then do; Lncotinine=abs(0.05+sqrt(0.01)*rannor(&seed11)); AvgCigs=abs(17+sqrt(2)*rannor(&seed11)); end;
-if visit='time2' then do; Lncotinine=abs(0.05+sqrt(0.01)*rannor(&seed11)); AvgCigs=abs(17+sqrt(2)*rannor(&seed11)); end;
-if visit='time3' then do; Lncotinine=abs(0.05+sqrt(0.01)*rannor(&seed11)); AvgCigs=abs(17+sqrt(2)*rannor(&seed11)); end;
-if visit='time4' then do; Lncotinine=abs(0.05+sqrt(0.01)*rannor(&seed11)); AvgCigs=abs(17+sqrt(2)*rannor(&seed11)); end;
-if visit='time5' then do; Lncotinine=abs(0.05+sqrt(0.01)*rannor(&seed11)); AvgCigs=abs(17+sqrt(2)*rannor(&seed11)); end;
-if visit='time6' then do; Lncotinine=abs(0.05+sqrt(0.01)*rannor(&seed11)); AvgCigs=abs(17+sqrt(2)*rannor(&seed11)); end;
-end;
+if (RACE=0) & 
+	(MENTHOL=1) & 
+	(ARM=1 & TIME=1) & 
+	(ARM=1 & TIME=0) & 
+	(ARM=1 & TIME=0) & 
+	(ARM=1 & TIME=0) &
+	(ARM=1 & TIME=0) & 
+	(ARM=1 & TIME=0) & 
+	(ARM=1 & TIME=0) &
+	AvgCigs>-1 &
+	SUBJECT>1 then LnCotinine=abs(2.021+sqrt(0.01)*rannor(subject)); 
+
+		else LnCotinine=1;
 
 **Exp Log(COTININE):;		
 eLnCotinine=Exp(LnCotinine);
-
-proc sort; by subject visit; 
-run;
-
-%mend transpose;
-%transpose(WideWhiteUNC, LongWhiteUNC);
-%transpose(WideBlackUNC, LongBlackUNC);
-%transpose(WideWhiteRNC, LongWhiteRNC);
-%transpose(WideBlackRNC, LongBlackRNC);
-
-**add time to data, for arm=1 we will simulate decreasing Lncotinine over time:;
-%macro timeRNCT(data);
-
-proc sort data=work.&data;
-by subject descending Lncotinine;
-run;
-
-data work.&data; 
-set work.&data; 
-by subject; 
-if first.subject then time=0; time+1; 
-run;
-
-%mend timeRNCT;
-%timeRNCT(LongWhiteRNC);
-%timeRNCT(LongBlackRNC);
-
-%macro timeUNCT(data);
-
-data work.&data; 
-set work.&data; 
-by subject; 
-if first.subject then time=0; time+1; 
-run;
-
-%mend timeUNCT;
-%timeUNCT(LongWhiteUNC);
-%timeUNCT(LongBlackUNC);
-
-data work.LONG(drop=visit);
-set work.LongWhiteUNC work.LONGBlackUNC work.LongWhiteRNC work.LONGBlackRNC;
-
-LnCotinineB=LnCotinine+abs(0.00+sqrt(0.01)*rannor(subject));
-**Exp Log(COTININE):;		
-eLnCotinineB=Exp(LnCotinineB);
 
 format 
 SUBJECT time arm race menthol 3.0
@@ -260,33 +203,19 @@ set work.LONG;
 run;
 */
 
-data work.subject;
-set work.LONG(keep=subject arm race);
-proc sort nodupkey; by arm race subject;
-run;
-
-proc transpose data=work.long out=work.widea(rename=(col1=LNCOTININE1 col2=LNCOTININE2 
+proc transpose data=work.long out=work.WIDE(rename=(col1=LNCOTININE1 col2=LNCOTININE2 
 col3=LNCOTININE3 col4=LNCOTININE4 col5=LNCOTININE5 col6=LNCOTININE6 col7=LNCOTININE7));
 var Lncotinine;
 by subject arm race menthol;
 run;
-proc transpose data=work.long out=work.wideb(rename=(col1=LNCOTININEB1 col2=LNCOTININEB2 
-col3=LNCOTININEB3 col4=LNCOTININEB4 col5=LNCOTININEB5 col6=LNCOTININEB6 col7=LNCOTININEB7));
-var LNCOTININEB;
-by subject arm race menthol;
-run;
-data work.WIDE;
-merge work.widea work.wideb;
-by subject;
-run;
 
 proc export data= LowSES.LONG 
-outfile= "\\fda.gov\WODC\CTP_Sandbox\OS\DPHS\StatisticsBranch\Team 2\Montes de Oca\rm04_ITP\1-LowSES\data\LONG.csv"
+outfile= "\\rm04_ITP\1-LowSES\data\LONG.csv"
 dbms=csv replace;
 putnames=yes;
 run;
 
-ods pdf file="\\fda.gov\WODC\CTP_Sandbox\OS\DPHS\StatisticsBranch\Team 2\Montes de Oca\rm04_ITP\1-LowSES\code\results\&program_name &sysdate9..pdf";
+ods pdf file="\\rm04_ITP\1-LowSES\code\results\&program_name &sysdate9..pdf";
 
 proc print n noobs data=work.LONG;
 title3 "First subject in each arm:";
@@ -372,7 +301,6 @@ run;
 ods pdf close;
 
 /******************************************************************************************
-End of \\fda.gov\WODC\CTP_Sandbox\OS\DPHS\StatisticsBranch\Team 2\Montes de Oca\
-	rm04_ITP\1-LowSES\code\rm_LowSES.sas
+End of \\rm04_ITP\1-LowSES\code\rm_LowSES.sas
 ******************************************************************************************/
 
