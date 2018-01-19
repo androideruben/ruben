@@ -3,6 +3,10 @@
 title "Linear Mixed Models ITP";
 title2;
 
+options source nostimer nocenter pagesize = 60 linesize = 132 noquotelenmax orientation=landscape
+mprint mlogic validvarname=v7 ;
+ods noproctitle;
+
 /**************************************************************************************************
 rm_LowSES.sas
 
@@ -131,58 +135,52 @@ var time1-time7;
 by subject arm race menthol;
 run;
 
-proc freq data=long0;
+proc freq data=work.long0;
 tables arm race menthol;
 run;
 
-data work.LONG;
+%macro long(dataout, 
+arm,
+RACE,
+MENTHOL,
+TIME1,
+TIME2,
+TIME3,
+TIME4,
+TIME5,
+TIME6,
+AvgCigs,
+SUBJECT);
+
+
+data work.&dataout;
 set work.LONG0;
 
-if visit='time1' then time=1;
-if visit='time2' then time=2;
-if visit='time3' then time=3;
-if visit='time4' then time=4;
-if visit='time5' then time=5;
-if visit='time6' then time=6;
-if visit='time7' then time=7;
+if visit='time1' then do; time1=1; time2=0; time3=0; time4=0; time5=0; time6=0; time7=0; time=1; end;
+if visit='time2' then do; time1=0; time2=1; time3=0; time4=0; time5=0; time6=0; time7=0; time=2; end;
+if visit='time3' then do; time1=0; time2=0; time3=1; time4=0; time5=0; time6=0; time7=0; time=3; end;
+if visit='time4' then do; time1=0; time2=0; time3=0; time4=1; time5=0; time6=0; time7=0; time=4; end;
+if visit='time5' then do; time1=0; time2=0; time3=0; time4=0; time5=1; time6=0; time7=0; time=5; end;
+if visit='time6' then do; time1=0; time2=0; time3=0; time4=0; time5=0; time6=1; time7=0; time=6; end;
+if visit='time7' then do; time1=0; time2=0; time3=0; time4=0; time5=0; time6=0; time7=1; time=7; end;
 
-**Y=Exp(Log(COTININE))= 1.1+ 0.3 RACE+ 0.0001 MENTHOL+ 0.001 ARM*TIME1+ 0.01 ARM*TIME2+ 0.001 ARM*TIME3
-0.0005 ARM*TIME4+ 0.0003 ARM*TIME5+ 0.0001 ARM*TIME6+ 0.02 AvgCigs+ 0.9 SUBJECT(ARM)+ epsilon
-with RANDOM SUBJECT(ARM) and epsilon N(0,S2)
+AvgCigs=abs(&AvgCigs+sqrt(3)*rannor(1234));
+SUBJECTEFFECT=abs(0.00+sqrt(1)*rannor(subject));
 
-
-A.- Expected for:
-
-0=RACE
-1=MENTHOL
-1=ARM
-1=ARM*TIME1
-0=ARM*TIME2
-0=ARM*TIM3
-0=ARM*TIME4
-0=ARM*TIME5
-0=ARM*TIME6
-x=AvgCigs=any number
-s=SUBJECT(ARM)=any number: 
-
-1.1+ 0+ 0.001+ 0+ 0+ 0+ 0+ 0+ 0.02+ 0.9= 2.021
+mymean=0.09+ 
+0.3000* RACE+ 
+0.0001* MENTHOL+ 
+0.0010* TIME1+ 
+0.0100* TIME2+ 
+0.0010* TIME3+
+0.0005* TIME4+ 
+0.0003* TIME5+ 
+0.0001* TIME6+ 
+(1/180)* AvgCigs+
+0.01* SUBJECTEFFECT
 ;
 
-AvgCigs=abs(18+sqrt(3)*rannor(2021));
-
-if (RACE=0) & 
-	(MENTHOL=1) & 
-	(ARM=1 & TIME=1) & 
-	(ARM=1 & TIME=0) & 
-	(ARM=1 & TIME=0) & 
-	(ARM=1 & TIME=0) &
-	(ARM=1 & TIME=0) & 
-	(ARM=1 & TIME=0) & 
-	(ARM=1 & TIME=0) &
-	AvgCigs>-1 &
-	SUBJECT>1 then LnCotinine=abs(2.021+sqrt(0.01)*rannor(subject)); 
-
-		else LnCotinine=1;
+LnCotinine=abs(mymean+sqrt(0.01)*rannor(subject)); 
 
 **Exp Log(COTININE):;		
 eLnCotinine=Exp(LnCotinine);
@@ -194,6 +192,55 @@ LnCotinine AvgCigs  10.2;
 proc sort; by subject time;
 run;
 
+proc print n noobs data=&dataout;
+title3 "data=&data where LnCotinine ne .";
+where LnCotinine ne .;
+var subject time LnCotinine eLnCotinine mymean;
+run;
+
+%mend LONG;
+%long(data,arm,race,menthol,time1,time2,time3,time4,time5,time6,AvgCigs,SUBJECTEFFECTS);**coefficients;
+
+**arm=1=RNC;
+%long(longR1, 1,   1,      1,    1,    0,    0,    0,    0,    0,     18,             1);
+%long(longR2, 1,   1,      1,    0,    1,    0,    0,    0,    0,     18,             1);
+%long(longR3, 1,   1,      1,    0,    0,    1,    0,    0,    0,     18,             1);
+%long(longR4, 1,   1,      1,    0,    0,    0,    1,    0,    0,     18,             1);
+%long(longR5, 1,   1,      1,    0,    0,    0,    0,    1,    0,     18,             1);
+%long(longR6, 1,   1,      1,    0,    0,    0,    0,    0,    1,     18,             1);
+
+**arm=0=UNC;
+%long(longU1, 0,   1,      1,    1,    0,    0,    0,    0,    0,     18,             1);
+%long(longU2, 0,   1,      1,    0,    1,    0,    0,    0,    0,     18,             1);
+%long(longU3, 0,   1,      1,    0,    0,    1,    0,    0,    0,     18,             1);
+%long(longU4, 0,   1,      1,    0,    0,    0,    1,    0,    0,     18,             1);
+%long(longU5, 0,   1,      1,    0,    0,    0,    0,    1,    0,     18,             1);
+%long(longU6, 0,   1,      1,    0,    0,    0,    0,    0,    1,     18,             1);
+
+data work.long(drop=time1-time7 col1);
+set 
+longr1
+longr2
+longr3
+longr4
+longr5
+longr6
+longu1
+longu2
+longu3
+longu4
+longu5
+longu6
+;
+format LnCotinine eLnCotinine subjecteffect 6.3;
+run;
+
+proc means mean data=long;
+class arm race;
+var mymean LnCotinine;
+format arm arm. race race.;
+run;
+ 
 proc compare base=LowSES.LONG compare=work.LONG;
 run;
 /*
@@ -278,32 +325,6 @@ random subject(arm)/solution;
 run;
 
 ods pdf close;
-
-arm=1
-RACE=1
-MENTHOL=1
-TIME1=1
-TIME2=0
-TIME3=0
-TIME4=0
-TIME5=0
-TIME6=0
-AvgCigs=18
-SUBJECT=1 
-
-y=1.1+ 
-0.3* RACE+ 
-0.0001* MENTHOL+ 
-0.001* TIME1+ 
-0.01* TIME2+ 
-0.001* TIME3
-0.0005* TIME4+ 
-0.0003* TIME5+ 
-0.0001* TIME6+ 
-0.02* AvgCigs+ 
-0.9* SUBJECT
-
-y
 
 /******************************************************************************************
 End of \\fda.gov\WODC\CTP_Sandbox\OS\DPHS\StatisticsBranch\Team 2\Montes de Oca\
