@@ -1,0 +1,244 @@
+﻿%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\documentclass[A4,12pt]{article}%
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage[table]{xcolor}
+\usepackage{latexsym}
+\usepackage[style=0,ntheorem]{mdframed}
+\usepackage[pdftex,bookmarks=true,bookmarksnumbered=true,hypertexnames=false,colorlinks=true,urlcolor=blue,colorlinks=true]{hyperref}
+\usepackage{multirow}
+\usepackage{fullpage}
+\usepackage{setspace}
+\usepackage{tikz}
+\usepackage{multirow}
+\usepackage{rotating}
+\usepackage{pdflscape}
+\usepackage{fancyhdr}
+\usepackage[utf8]{inputenc}
+\usepackage{lscape}
+\usepackage{color}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{longtable}
+\usepackage{kpfonts}
+\usepackage[english]{babel}
+\usepackage{csquotes}
+\usepackage{titlesec}
+\usepackage{pdflscape}
+\usepackage{tabu}
+\usepackage{booktabs,siunitx,caption}
+\usepackage{graphicx}
+\usepackage[referable]{threeparttablex}
+\newcommand{\sectionbreak}{\clearpage}
+\newcommand{\subsectionbreak}{\clearpage}
+\usepackage[font=small,labelfont=bf]{caption}
+\captionsetup[table]{skip=0.5pt}
+\usepackage{subcaption}
+\usepackage{array}
+\usepackage[verbose]{placeins}
+\usepackage[ngerman]{babel}
+\usepackage{blindtext}
+\usepackage{amsfonts}%
+\setcounter{MaxMatrixCols}{30}
+\usepackage{siunitx}
+\providecommand{\U}[1]{\protect\rule{.1in}{.1in}}
+\newcommand{\tablefont}{\fontsize{3mm}{3mm}\selectfont}
+\MakeOuterQuote{"}
+\newcommand{\MC}{\multicolumn}
+\newcommand{\MR}{\multirow}
+\headheight 15pt
+\headsep 2em
+\renewcommand{\footrulewidth}{0pt}
+\newtheorem{remark}{Remark}
+\newtheorem{comment}{\textbf{Comment}}
+\newtheorem{definition}{Definition}
+\newtheorem{discussion}{Discussion:}
+\newtheorem{claim}{Claim}
+\newtheorem{question}{Question}
+\newtheorem{answer}{Answer}
+\usepackage{fancyhdr}
+\fancyhf{}
+\rhead{Share\LaTeX}
+\lhead{Guides and tutorials}
+\usepackage{enumitem}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}
+%page 1: %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\vspace{-25pt}%
+\begin{tabular}
+	[t]{lp{1.1in}l}%
+	\multirow{5}{*}{\includegraphics[width = 2.1in]{HHSFDA}} 
+																								&  & U.S. Department of Health and Human Services\\
+																								&  & Food and Drug Administration\\
+																								&  & Center for Tobacco Products\\
+																								&  & Office of Sciences\\
+																								&  & Division of Population Health Science\\
+																								&  & Statistics Branch\\
+																								&  &
+\end{tabular}
+
+\newline\vspace{15pt} \newline{\Large \textsc{Investigational Tobacco Products}}\newline\vspace{0.015in}
+
+\begin{tabular}[h!]{p{2in} p{10in}}
+	\rule{0pt}{4ex}\textbf{Reporting to:}          & Antonio Paredes, MA, MS \\
+																							   & Lead Mathematical Statistician\\
+																							   & Division of Population Health Science\\
+                                                 & Statistics Branch\\
+																							   &\\
+	\rule{0pt}{4ex}\textbf{Subject:}               & ITP: Reducing Nicotine Content in Cigarettes\\
+																								 & and Low Socio-Economic Status\\ 	
+	\rule{0pt}{4ex}\textbf{Date:}                  & \today\\
+	\rule{0pt}{4ex}\textbf{Statistical Reviewer:}  & Ruben Montes de Oca, MS \\
+																							   & Mathematical Statistician\\
+																							   & Division of Population Health Science\\
+                                                 & Statistics Branch\\
+																							   &\\
+	\rule{0pt}{4ex}\textbf{Branch Chief:}          & George Rochester, PhD \\
+																							   & Chief, Statistics Branch\\
+																							   & Division of Population Health Science\\
+                                                 & Statistics Branch\\
+                                                 &\\
+	\rule{0pt}{4ex}\textbf{Key Words \& Phrases:}  & Investigational Tobacco Product,\\
+																								 & Clinical Trial,\\
+																								 & Study design\\
+		\mbox{$\quad$} \\
+		\mbox{$\quad$} \\
+\end{tabular}
+\newpage
+
+%page 2: %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section*{LINEAR MIXED MODEL}
+\noindent 
+
+This ITP randomized 280 subjects into two ARM: 140 used the usual nicotine content cigarettes (UNC) and 140 used reduced nicotine content (RNC) cigarettes. The randomization also stratified into two races (White, Black). The subjects in each arm selected at the beginning  of the study weather or not use mentholated cigarettes (yes/no) during the trial. The RNC arm has the property that the nicotine content of the cigarettes smoked by the subjects, mentholated or not, reduced its nicotine content at each time. At time one the RNC cigarettes provided to its 140 subjects contain 0.8 mg of nicotine, at time 2 its 140 subjects used cigarettes containing 0.7 mg of nicotine, at times 3 to 6 the nicotine content was 0.6, 0.5, 0.4, 0.3. The biomarker of exposure measured and tested was cotinine and we will propose a linear mixed model to test the null hypothesis:
+\\ \\
+\textbf{Null:} $H_{0}$: there is a significant reduction of cotinine in the UNC compared to the reduction of cotinine in the RNC arm at time 6.
+\\ \\
+\textbf{Alternative:} $H_{1}$: there is not a significant reduction of cotinine in the UNC compared to the reduction of cotinine in the RNC arm at time 6.
+\\ \\
+Our model has subjects as i, one observation of cotinine at baseline, and six observations of cotinine at six different times. We will use these dummy variables:
+\\ \\
+ARM: 0 for usual nicotine content (UNC), 1 for reduced nicotine content (RNC)
+\\ \\
+RACE: 0 for Black, 1 for White
+\\ \\
+MENTHOL: 0 for non-mentholated, 1 for mentholated cigarette
+\\ \\
+BASELINE: measure of cotinine before randomization, only one measure per subject.
+\\ \\
+TIMEj=1 if subject was measured at time=j, 0 else, with j=1,2,3,4,5. For measurements at time 6, all the dummy TIME1, TIME5 are 0.
+\\ \\
+(Since the number of time measurements are six, we need five of these dummy variables.)
+\\ \\
+The model that we propose is, for subject i, and time j=1,...,5:
+\\ \\
+$y_{ij}$= $\beta_{0} + \beta_{1} \ ARM_{ij} + \beta_{2} \ RACE_{ij} + \beta_{3} \ MENTHOL_{ij} + \beta_{4} \ BASELINE_{ij}+ $
+$\beta_{5} \ ARMTIME1_{ij} + \beta_{6} \ ARMTIME2_{ij}+ \beta_{7} \ ARMTIME3_{ij}+ \beta_{8} \ ARMTIME4_{ij}+ $
+$\beta_{9} \ ARMTIME5_{ij}+ \ SUBJECT_{i} + \epsilon_{ij}$
+\\ \\
+Since we want to test the null hypothesis at time 6 our testing is:
+\\ \\
+\textbf{Null:} $H_{0}: \beta_{9}$ for the RNC\>0 (cotinine increased.)
+\\ \\
+\textbf{Alternatve:} $H_{1}: \beta_{9}$ for the RNC\<0.
+\\ \\
+Our assumption is that over time, cotinine is lower in subjects smoking RNC compared to subjects smoking UNC, and at the last measurement
+at time 6, we would reject the null hypothesis.
+\\ \\
+The previous model can be written written as:
+\\ \\
+$Y_{i}= X_{i} \beta + Z_{i} u_{i} + \epsilon_{i}$ 
+\\ \\
+For subject one, we have six observations of cotinine at times 1 to 6:
+\\ \\
+$Y_{1}$ =
+\[
+\begin{bmatrix}
+y_{1 1}
+\\
+y_{1 2}
+\\
+\vdots
+\\
+y_{1 6}
+\end{bmatrix}
+\]
+\\ \\
+with $X_{i}$ the design matrix 6 $\times$ 10 for the fixed effects. The entries of this matrix are known numbers.
+\\ \\
+$\beta$ is vector $10 \times 1$ of unknown fixed entries that will be estimated.
+\\ \\
+$Z_{i}$ is the design matrix 6 $\times$ 1 for the random effects. The entries of this matrix are also known numbers.
+\\ \\
+$SUBJECT_{i}$ $\sim N(0, D_{u})$ are the unknown random effects to be estimated and due to subject i, i=1 to 280s. 
+\\ \\
+and $\epsilon_{ij}$ $\sim N(0, R)$ are unknown random errors, a $6 \times 6$ symetric matrix of cov($\epsilon_{ir}, \epsilon_{is}$) for 
+example, subject i has the first row as cov($\epsilon_{11}, \epsilon_{11}$), cov($\epsilon_{11}, \epsilon_{12}$),..., cov($\epsilon_{11}, \epsilon_{16}$).
+\\ \\
+The expected value and the variance for subject i in the model is:
+\\ \\
+$Y_{i}$ $\sim N(X_{i} \beta, Z_{i} D_{u} Z_{i}^{'} + R)$
+\\ \\
+\textbf{As an example,} we will look at subject i=1: assume that this subject is in the RNC arm (ARM=1), is Black (RACE=0), 
+and does use menthol cigarettes (MENTHOL=1):
+\\ \\
+$X_{1}$ a 6 $\times$ 10 matrix with these columns: column of 1 for intercept, column of ARM (0=RNC), column of RACE (1=black), 
+column of MENTHOL (1=Yes), and  TIMEj*ARM (0= time different than j, 1=time j), :
+\\ \\
+$X_{1}$ =
+\[
+\begin{bmatrix}
+1 & 0 & 1 & 1 & 1.2 & 1 & 0 & 0 & 0 & 0
+\\
+1 & 0 & 1 & 1 & 1.2 & 0 & 1 & 0 & 0 & 0
+\\
+\vdots & \vdots & \vdots & \vdots & \vdots & \vdots & \vdots & \vdots & \vdots & \vdots
+\\
+1 & 0 & 1 & 1 & 1.2 & 0 & 0 & 0 & 0 & 1 
+\end{bmatrix}
+\]
+\\ \\
+with the column of 1.2 the values of cotinine at baseline and the bloc of the last five columns being values associated to times. The model for i=1, j=1 is obtained multiplying row 1 of $X_{1} \times \beta$ which gives:
+\\ \\
+$y_{11}= \beta_{0} \times 1+ \beta_{1} \times 0 + \beta_{2} \times 1 + \beta_{3} \times 1 + \beta_{4} \times 1 +
+\beta_{5} \times 1.2+ \beta_{6} \times 1+ \beta_{7} \times 0+ \beta_{8} \times 0+ \beta_{9} \times 0=
+\beta_{0} \times 1+ \beta_{2} \times 1 + \beta_{3} \times 1 + \beta_{4} \times 1 + \beta_{5} \times 1.2$
+\\ \\
+$Z_{1}$ is a 6 $\times$ 1 matrix with a column of 1 for subject=1:
+\\ \\
+$Z_{i}$=
+\[
+\begin{bmatrix}
+1
+\\
+1
+\\
+\vdots
+\\
+1
+\end{bmatrix}
+\]
+\\ \\
+The model will be fitted using all the 280 subjects, with six six cotinine observations each.
+If we put together all the subjects, we have the model written as:
+\\ \\
+Y=X $\beta$ + Z u + $\epsilon$
+\\ \\
+Y is the vector of all the 280*6 observed plasma cotinine, $\beta$ is the 7 $\times$ 1 vector of fixed unknown coefficients,
+X is the 280*6 $\times$ 7 design matrix obtained by concatenating the 280 design matrices $X_{i}$ of subjects 1 to 280,
+Z is the 280*6 $\times$ 280 matrix obtained by putting in the diagonal the 280 design matrices $Z_{i}$, and u is the 
+vector with ($u_{1i}$) for each one of the 280 subjects i.
+
+\newpage
+
+%page 3: %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\end{document} 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
