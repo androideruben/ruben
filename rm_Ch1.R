@@ -10,12 +10,10 @@ setwd("//fda.gov/WODC/CTP_Sandbox/OS/DPHS/StatisticsBranch/Team 2/Montes de Oca/
 library(readxl)
 dat1<-read_excel("dat1.xlsx", sheet = "Sheet1")
 #attach(dat1); summary(dat1); 
+sapply(dat1,is.numeric)
 
 ###Create a new numeric variable exp_n with values 0, 1 using values in the char variable exp UNEXP, EXP:
-# Recode into a new field in R, first create the new field
 dat1$exp_n <- NA
-
-# Then recode the old field into the new one for the specified rows
 dat1$exp_n[dat1$exp=='EXP'] <- 1
 dat1$exp_n[dat1$exp=='UNEXP'] <- 0
 dat1
@@ -27,7 +25,7 @@ X <- as.matrix(cbind(1,dat1$exp_n))
 X
 Y<-as.matrix(dat1$out)
 Y
-sapply(dat1,is.numeric)
+
 
 ###beta-hat = ((X'X)^(-1))X'y, solve() takes the inverse of a matrix.
 det(t(X) %*% X) #not- zero, then invertible
