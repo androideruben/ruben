@@ -1,98 +1,52 @@
 ###################################################################################################################################
-#rm_chapter1.R 
+#rm_Ch2.R 
 #programmer: Ruben Montes de Oca, CTP
 #Purpose: Review of regression
 #Started on February 1, 2018
-##############################################
+##################################################################################
 
-###############################################
+##################################################################################
+rm(list=ls())
+options(digits=4)
+
 setwd("//fda.gov/WODC/CTP_Sandbox/OS/DPHS/StatisticsBranch/Team 2/Montes de Oca/Linear Regression Assignment/Dataset")
+
 library(readxl)
+dat3<-read_excel("dat3.xlsx", sheet = "Sheet1")
 
-row1 = c(31/177, -3/177)
-row2=c(-3/177, 6/177)
+##Use bmi as Y
+summary(dat3)
 
-##xtx_1=(X'X)^-1:
-xtx_1 <- as.matrix(data.frame(row1, row2))
-xtx_1
+dat3$exposureN <- NA
+dat3$exposureN[dat3$exposure=='exposed'] <- 1
+dat3$exposureN[dat3$exposure=='unexposed'] <- 0
+dat3
 
-det(xtx_1)
+dat3$sexN <- NA
+dat3$sexN[dat3$sex=='male'] <- 1
+dat3$sexN[dat3$sex=='female'] <- 0
+dat3
+drop<-names(dat3) %in% c("X__1", "sex", "exposure")
+dat3<-dat3[!drop]
+summary(dat3)
 
+###I want to use numeric vars:
+str(dat3)
 
+##################################################################################
+#PART A1: Matrix regression for dat3.xlsx to be compared to Part A2:
+##################################################################################
 
+###create X, Y matrices for this specific regression, cbind adds a column of ones
+X <- as.matrix(cbind(1,dat3$glucose, dat3$diastolic, dat3$triceps, dat3$insulin, 
+														dat3$diabetes, dat3$age, dat3$exposureN, dat3$sexN))
 
+####print first five obs:
+head(X, n=5)
 
-
-
-dat1<-read_excel("dat1.xlsx", sheet = "Sheet1")
-#attach(dat1); summary(dat1); 
-sapply(dat1,is.numeric)
-
-###Create a new numeric variable exp_n with values 0, 1 using values in the char variable exp UNEXP, EXP:
-dat1$exp_n <- NA
-dat1$exp_n[dat1$exp=='EXP'] <- 1
-dat1$exp_n[dat1$exp=='UNEXP'] <- 0
-dat1
-
-#######################
-##1. Calculations by hand using summary of X, Y from Table 1:
-###beta1 formula (4) or (1.7) from book and SAS output above, Table 1
-beta1= (72.7883687 - (45.00* 151.9104163/100))/ (45.00- (45.00*45.00/100))
-beta1
-
-###beta0 formuula (5) of (1.7) from book
-beta0=151.9104163/100- beta1*0.4500
-beta0
-
-###formula (8) or (1.13) from book
-ssres=53.139 #SAS output yresid
-
-###formula (10) or (1.16) from book
-ssreg=beta1^2* 24.750 #SAS output exp_n_Mean_exp_n2
-ssreg
-
-###formula (11) or (1.17) from book
-sstotal=ssreg+ssres
-sstotal
-
-###s^2=ssres/(n-2):
-s=sqrt((53.139)/(100-2))
-s
-
-### Formula (15) or (1.26) from book
-sebeta1=s / ((24.750) )^0.5
-sebeta1
-
-###Formula 15 or (1.32)
-sebeta0= s*( (1/100) + 0.45^2 / (24.750) )^0.5
-sebeta0	
-
-###Formula 14 or (1.36) from book
-t1=beta1-0/ sebeta1
-t1
-
-###Formula 14 or (1.36) from book
-t0=beta0-0/ sebeta0
-t0	
-	
-###Formula 10 or page 18 from book
-msreg=ssreg/1; msres=ssres/(100-2)
-F=msreg/msres
-F
-
-### Formula (13) or (1.18) from the book
-rsq=ssreg/sstotal
-rsq
-
-
-###2. Using lm:
-summary(lm(out ~ exp_n, data = dat1))
-
-###3. Calculate regression manually using matrix algebra in R
-
-## Create X and Y matrices for this specific regression, cbind adds a column of ones
-X <- as.matrix(cbind(1,dat1$exp_n))
-Y<-as.matrix(dat1$out)
+####print first six obs:
+Y<-as.matrix(dat3$bmi)
+head(Y, n=6)
 
 ###beta-hat = ((X'X)^(-1))X'y, solve() takes the inverse of a matrix.
 det(t(X) %*% X) #not- zero, then invertible
@@ -100,57 +54,80 @@ det(t(X) %*% X) #not- zero, then invertible
 bh = solve( t(X) %*% X ) %*% t(X) %*% Y
 bh
 
-##residuals
-res = as.matrix(dat1$out-bh[1]-bh[2]*dat1$exp_n)
-res
+###Yhat, print first 7 obs:
+Yh= X %*% bh
+head(Yh, n=7)
 
-##n=number of observations and k=number of parameters 
-n = nrow(dat1); k = ncol(X)
+###residuals are: e=Y-Yh, print first eight obs:
+res=Y-Yh
+head(res, n=8)
+
+###n=number of observations and k=number of parameters 
+n = nrow(dat3); k = ncol(X)
 n
 k
 
-##Variance-Covariance Matrix
-varcov = 1/(n-k) * as.numeric( t(res)%*%res ) * solve(t(X)%*%X)
+###Variance-Covariance Matrix Var(bh|X)=ehat' ehat (X' X)^-1
+varcov = (1/(n-k)) * as.numeric( t(res)%*%res ) * solve(t(X)%*%X)
 varcov
 
-## Standard errors of the estimated coefficients
+###standard errors of the estimated coefficients
 stderr = sqrt(diag(varcov))
 stderr
 
-##t-test
+###t-test
 tbeta0=bh[1]/ stderr[1]
-tbeta0
-
 tbeta1=bh[2]/ stderr[2]
-tbeta1
+tbeta2=bh[3]/ stderr[3]
+tbeta3=bh[4]/ stderr[4]
+tbeta4=bh[5]/ stderr[5]
+tbeta5=bh[6]/ stderr[6]
+tbeta6=bh[7]/ stderr[7]
+tbeta7=bh[8]/ stderr[8]
+tbeta8=bh[9]/ stderr[9]
 
-##p-values for a t-test
-pvalues = rbind(2*pt(abs(bh[1]/stderr[1]), df=n-k,lower.tail= FALSE), 2*pt(abs(bh[2]/stderr[2]), df=n-k,lower.tail= FALSE))
+tbeta=rbind(tbeta0, tbeta1, tbeta2, tbeta3, tbeta4, tbeta5, tbeta6, tbeta7, tbeta8)
+tbeta
+
+###p-values for the t-test
+pvalues = rbind(
+	2*pt(abs(bh[1]/stderr[1]), df=n-k,lower.tail= FALSE), 
+	2*pt(abs(bh[2]/stderr[2]), df=n-k,lower.tail= FALSE),
+	2*pt(abs(bh[3]/stderr[3]), df=n-k,lower.tail= FALSE), 
+	2*pt(abs(bh[4]/stderr[4]), df=n-k,lower.tail= FALSE), 
+	2*pt(abs(bh[5]/stderr[5]), df=n-k,lower.tail= FALSE), 
+	2*pt(abs(bh[6]/stderr[6]), df=n-k,lower.tail= FALSE), 
+	2*pt(abs(bh[7]/stderr[7]), df=n-k,lower.tail= FALSE), 
+	2*pt(abs(bh[8]/stderr[8]), df=n-k,lower.tail= FALSE), 
+	2*pt(abs(bh[9]/stderr[9]), df=n-k,lower.tail= FALSE)
+	)
 pvalues
 
-##Goodness of fit: 
-#### Total sum of Square corrected 
+###goodness of fit: 
 J = matrix(1, nrow=n, ncol=n)
+
+####Sum of Squares for total, error, and model 
 SSTO = t(Y) %*% Y - (1/n)*t(Y)%*%J%*%Y
 SSTO
 
-#Model, Total and Error sum of squares 
 SSM = t(bh)%*%t(X)%*%Y - (1/n)%*%t(Y)%*%J%*%Y
 SSM
 
 SSE= SSTO- SSM
 SSE
 
-##Model, Error Mean squares
-SSMM=SSM/1 ##df
-SSM
+####mean squares Model, and error
+SSMM=SSM/(k-1) ##df
+SSMM
 
 SSEM=SSE/(n-k) ##df
 SSEM
 
+####F Value
 F=SSMM/SSEM
 F
 
+####Pr>F
 Fp=1-pf(F, 1, 98)
 Fp
 
@@ -158,21 +135,108 @@ Fp
 R2=1- (SSE/SSTO)
 R2
 
-##Adjusted R-square
+####adjusted R-square
 RA2=1-( (SSE/(n-k) ) / ( SSTO/(n-1) ) )
 RA2
 
-##Dependent mean is the same as the mean of Y
+####dependent mean is the same as the mean of Y
 Dmean=mean(Y)
 Dmean
 
+####coefficient of variation
 CV <- function(rootSSEM, Dmean){
       (rootSSEM/Dmean)*100
 }
 CV(sqrt(SSEM), Dmean)
 
+##################################################################################
+#PART A2: Compare results from A to this part that uses lm (compare to Part A1.)
+##################################################################################
 
-#End of rm_Ch1.R#############################################
+summary(lm(bmi ~ glucose+ diastolic+ triceps+ insulin+ diabetes+ age+ 
+					exposureN+ sexN, data=dat3))
+
+##################################################################################
+#PART C: Book exercises
+##################################################################################
+
+##################################################################################
+####3.2 For each of the following matrices, indicate whether there will be a 
+####unique solution to the normal quations. Show how you arrived at your answer.
+
+##################################################################################
+####A.
+
+col1=c(1, 1, 1, 1)
+col2=c(2, 3, 0, -1)
+col3=c(4, 8, 6, 2)
+
+X <- as.matrix(data.frame(col1, col2, col3))
+X
+
+#####transpose of X:
+t(X)
+	
+det(t(X) %*% X)
+solve( t(X) %*% X ) %*% t(X) 
+
+##################################################################################
+####B
+col1=c(1,1,1,1)
+col2=c(1,1,0,0)
+col3=c(0,0,0,1)
+
+X <- as.matrix(data.frame(col1, col2, col3))
+X
+
+#####transpose of X:
+t(X)
+	
+det(t(X) %*% X)
+solve( t(X) %*% X ) %*% t(X) 
+
+##################################################################################
+####C
+col1=c(1,1,1,1)
+col2=c(2,1,-3,-1)
+col3=c(4,2,-6,-2)
+
+X <- as.matrix(data.frame(col1, col2, col3))
+X
+
+#####transpose of X:
+t(X)
+	
+det(t(X) %*% X)
+####solve( t(X) %*% X ) %*% t(X)  will not work because matrix is singular: 
+
+##################################################################################
+###3.4. A data set with one independent variable and an intercept gave the 
+####following (X' X)^1:
+
+col1 = c(31/177, -3/177)
+col2=c(-3/177, 6/177)
+
+####xtx_1=(X'X)^-1:
+xtx_1 <- as.matrix(data.frame(col1, col2))
+xtx_1
+
+####How many observations were there in the data set? Find sum(Xi)^2i.
+
+det(xtx_1)
+solve( xtx_1)
+
+###Then, since row1(X')=[1 1... 1] and row2(X')=[X1 x2... Xn]:
+#X'X is the 2x2 matrix:
+
+# n        sum(Xi) 
+# sum(Xi)  sum(Xi^2) 
+
+#and n=6, sum(Xi^2)=31
+
+##################################################################################
+#End of rm_Ch3.R##################################################################
+##################################################################################
 
 
 
