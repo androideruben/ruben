@@ -150,9 +150,180 @@ bh
 #retained in the model (FALSE)
 
 
+
 ##################################################################################
 #End of rm_Ch4.R##################################################################
 ##################################################################################
 
 
 
+Y=matrix(c( 
+44.609,
+45.313,
+54.297,
+59.571,
+49.874,
+44.811,
+45.681,
+49.091,
+39.442,
+60.055,
+50.541,
+37.388,
+44.754,
+47.273,
+51.855,
+49.156,
+40.836,
+46.672,
+46.774,
+50.388,
+39.407,
+46.080,
+45.441,
+54.625,
+45.118,
+39.203,
+45.790,
+50.545,
+48.673,
+47.920,
+47.467
+), nrow=31, ncol=1, byrow=TRUE)
+colnames(Y) <- c("Y")
+
+X=matrix(c( 
+1, 11.37, 62, 178, 182,
+1, 10.07, 62, 185, 185,
+1,  8.65, 45, 156, 184,
+1,  8.17, 40, 166, 172,
+1,  9.22, 55, 178, 180,
+1, 11.63, 58, 176, 176,
+1, 11.95, 70, 176, 180,
+1, 10.85, 64, 162, 170,
+1, 13.08, 63, 174, 176,
+1,  8.63, 48, 170, 186,
+1, 10.13, 45, 168, 168,
+1, 14.03, 56, 186, 192,
+1, 11.12, 51, 176, 176,
+1, 10.60, 47, 162, 164,
+1, 10.33, 50, 166, 170,
+1,  8.95, 44, 180, 185,
+1, 10.95, 57, 168, 172,
+1, 10.00, 48, 162, 168,
+1, 10.25, 48, 162, 164,
+1, 10.08, 67, 168, 168,
+1, 12.63, 58, 174, 176,
+1, 11.17, 62, 156, 176,
+1,  9.63, 48, 164, 166,
+1,  8.92, 48, 146, 186,
+1, 11.08, 48, 172, 172,
+1, 12.88, 44, 168, 172,
+1, 10.47, 59, 186, 188,
+1,  9.93, 49, 148, 160,
+1,  9.40, 56, 186, 188,
+1, 11.50, 52, 170, 176,
+1, 10.50, 53, 170, 172
+), nrow=31, ncol=5, byrow=TRUE)
+colnames(X) <- c("X0", "X1", "X2", "X3", "X4")
+
+#n:
+n=31
+
+#Full rank model if the rank of X equals its number of columns:
+qr(X)$rank
+
+#Since it is a full rank model, the bh=bhat is unique:
+##The book has Yi = 84.26902 - 3.06981 Xi1 + 0.00799 Xi2 - 0.11671 Xi3 + 0.08518 Xi4:
+bh = solve( t(X) %*% X ) %*% t(X) %*% Y
+bh
+
+#The defining matrices J/n, (P - J/n), and (I - P) are pairwise
+#orthogonal to each other and sum to I. Consequently, they partition
+#the total uncorrected sum of squares into orthogonal sums of squares.
+
+## J is ones everywhere. J/n is idempotent with tr(J/n)=1
+J=matrix(1,nrow=31,ncol=31) 
+sum(diag(J/31)) #trace (J/n)
+
+##P:
+P=X %*% solve( ( t(X) %*% X ))  %*% t(X) #page 109
+
+##I:
+I=diag(31)
+
+#Residual SS:
+(t(Y) %*% Y) - t(bh) %*% t(X) %*% Y  
+
+##Degrees of freedom for the Residual SS:
+qr(I-P)$rank
+
+##The residual mean square is an unbiased estimate of sigma^2:
+((t(Y) %*% Y) - t(bh) %*% t(X) %*% Y ) / qr(I-P)$rank
+
+#To test H0: beta2=beta4=0=m:
+m=0
+
+K=matrix(c( 
+	0, 0,
+	0, 0,
+	1, 0,
+	0, 0,
+	0, 1
+), nrow=5, ncol=2, byrow=TRUE)
+
+##df is 2:
+qr(t(K))$rank
+
+#Q = (K' ß^ -m)' [K' (X' X)^-1 * K]^-1 * (K' ß^ -m)= 10.0016:
+Q=t( t(K) %*% bh - m) %*% solve( t(K) %*% ( solve(t(X) %*% X)) %*% K) %*% ( t(K) %*% bh - m)
+Q
+
+#F-test of the null hypothesis is F= s^2 *(Q/2)= 0.673 with 2 and 26 df:
+F= (Q/2) / ( ((t(Y) %*% Y) - t(bh) %*% t(X) %*% Y ) / qr(I-P)$rank ) 
+F
+
+##Since F< F_2_26, no reason to reject the null hypothesis that ß2 and ß4 are both zero:
+qf(0.95, df1=2, df2=26) 
+pf(F, 2, 26)
+
+
+#TABLE 4.4. Summary analysis of variance for the regression of oxygen uptake on
+#run time, heart rate while resting, heart rate while running, and maximum heart rate.
+
+
+##Source  		df  SS  			MS
+##Total(corr)	30 	851.3815
+##Regression 	4 	658.2368 	164.5659
+##Residual 		26 	193.1178 	7.4276 = s^2
+
+TotCorr=(t(Y)%*%Y) - ( t(Y) %*% (J/n) %*% Y )  #Total(uncorr) - SS(mu)
+TotCorr
+
+SSReg=t(Y) %*% P %*% Y - ( t(Y) %*% (J/n) %*% Y )  #SSReg= SSModel- SS(mu)
+SSReg
+SSReg= t(Y) %*% (P - J/n) %*% Y  #Also, SSReg= Y' (P-J/n) Y
+SSReg
+
+SSReg/sum(diag(P-J/n))   #SSReg/n-p', p' is sum(diag(P))
+
+SSRes=TotCorr- SSReg
+SSRes/ sum(diag(I-P))   #SSRes/n-p' is also s^2
+
+
+
+
+
+
+
+
+
+
+/ sum(diag(P))   #Also SSModel is (t(bh) %*% t(X) %*% Y)
+
+
+#SS mu (sum(Y)*sum(Y)/n):
+t(Y) %*% (J/n) %*% Y
+
+#SS Regression = SS Model - SS mu:
+(t(bh) %*% t(X) %*% Y) - (t(Y) %*% (J/n) %*% Y) / 30
