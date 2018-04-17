@@ -1,6 +1,11 @@
-	%let program_name=rm_MR0000059;
+%let program_name=rm_MR0000059;
 
-proc printto log="\\fda.gov\WODC\CTP_Sandbox\OS\DPHS\StatisticsBranch\MRTPA\PMPSA MR0000059+\Montes de Oca\Programs\results\rm_analysis &sysdate9..log" new; run;*/
+%let permanent=*;
+
+%let permanent=*; 
+*%let permanent=; *This row only: put "*%let permanent=" if wanted to keep old permanent data;
+
+proc printto log="\\fda.gov\WODC\CTP_Sandbox\OS\DPHS\StatisticsBranch\MRTPA\PMPSA MR0000059+\Montes de Oca\Programs\results\&program_name &sysdate9..log" new; run;
 
 	%put code executed on &sysdate9. at &systime.;
 	data _null_; call symput('begintime',time()); run;
@@ -14,11 +19,16 @@ proc printto log="\\fda.gov\WODC\CTP_Sandbox\OS\DPHS\StatisticsBranch\MRTPA\PMPS
 Purpose of rm_MR0000059.sas:
 
 	FDA Analysis: 
-		  I. Mixed models for primary and secondary endpoints
-		 II. Means, mixed and frequencies for exploratory
-		III. Other clinical results
-		 IV. Sample size and power
-		  V. Printout clean report (note: lst and log will be available to compare and check all results.)
+		0. Create data set for mixed models analysis, and BLOQ analysis
+
+		1. Run mixed models for primary, secondary endpoints, risk markers, nicotine, and cotinine
+		2. Print clean report
+		   (note: lst and log will be available to compare and check all results)
+		
+		3. Additional analysis
+		3.1. Means, mixed and frequencies for exploratory
+		3.2. Other clinical results
+		3.2. Sample size and power
 
 	MRTPA data folders are:
 		\\fda.gov\WODC\CTP_Sandbox\OS\DPHS\StatisticsBranch\MRTPA\PMPSA MR0000059+\Montes de Oca\04 REXC04JP\data\ADaM\
@@ -104,6 +114,7 @@ First: Load all these data sets. They will be used to construct new data sets as
   	drop i;    
 
 	/*proc sort nodupkey; by _all_; run;*/
+	run;
 
 	%mend xpt;
 
@@ -151,7 +162,7 @@ End of First: Load all these data sets. They will be used to construct new data 
 ***********************************************************************************************;
 
 *******************************************************************************************
-	I. Mixed models for primary and secondary endpoints
+0. Create data set for mixed models analysis, and BLOQ analysis.
 *******************************************************************************************;
 
 title3 "FDA Analysis: Mixed models for primary and secondary endpoints";
@@ -164,19 +175,102 @@ if paramcd in ('UMHBMCRE','U3HPMCRE','USPMACRE') & avisit='DAY 5' & fasfl='Y' & 
 
 	or paramcd in ('CO') & avisit='DAY 5' & atpt='08:00-09:30 PM' & fasfl='Y' & anl02fl='Y'
 	or paramcd in ('U1OHPCRE','UNNNCRE','U4ABPCRE','U1NACRE','U2NACRE','UOTOLCRE','UCEMACRE',
-					'UHEMACRE','UBAPCRE','UHMPMCRE','USBMACRE','UNNALCRE','UNEQCRE') 
+					'UHEMACRE','UBAPCRE','UHMPMCRE','USBMACRE','UNNALCRE','UNEQCRE'
+					'UPGF2CRE', 'UTXB2CRE') 
 					& avisit='DAY 5' & fasfl='Y' & anl02fl='Y';
 run;
 data work.rm_04JPB;
 set work.adpc;
+if paramcd in ('NIC', 'COT') & fasfl='Y' & anl02fl='Y' & '19:00't < atm< '21:00't;
 run;
-data work.rm_04JPC;**Nicotine and Cotinine using chg=aval-base;
+data work.rm_04JPC;
 set work.adpp;**adam.ADPP does not have 'BASE';
 run;
-data work.rm_04JP;**Max and Avg for nicotine, cotinine:;
-set work.rm_04JPA work.rm_04JPB work.rm_04JPC;
-run;
 
+**Put some order:;
+proc format;
+value myorder
+1= 'UMHBMCRE'  
+2= 'U3HPMCRE' 
+3= 'USPMACRE' 
+4= 'CARBXHGB' 
+
+5= 'CO' 		
+6= 'U1OHPCRE' 
+7= 'UNNNCRE' 	
+8= 'U4ABPCRE' 
+
+9= 'U1NACRE' 	
+10='U2NACRE' 	
+11='UOTOLCRE' 
+12='UCEMACRE' 
+
+13='UHEMACRE' 
+14='UBAPCRE' 	
+15='UHMPMCRE' 
+16='USBMACRE' 
+
+17='UNNALCRE' 
+18='UNEQCRE' 	
+19='8-EPI-PGF2 ALPHA'
+20='11-DTX-B2'
+
+21='NIC' 		
+22='COT';
+run; 		
+
+data work.rm_04JP;**Max and Avg for nicotine, cotinine:;
+set work.rm_04JPA(drop=DTYPE) work.rm_04JPB(drop=DTYPE) work.rm_04JPC;
+
+**Put some order:;
+if paramcd='UMHBMCRE' 			then myorder=1;
+if paramcd='U3HPMCRE' 			then myorder=2; 
+if paramcd='USPMACRE' 			then myorder=3; 
+if paramcd='CARBXHGB' 			then myorder=4; 
+
+if paramcd='CO' 				then myorder=5; 
+if paramcd='U1OHPCRE' 			then myorder=6; 
+if paramcd='UNNNCRE' 			then myorder=7; 	
+if paramcd='U4ABPCRE' 			then myorder=8; 
+
+if paramcd='U1NACRE' 			then myorder=9; 	
+if paramcd='U2NACRE' 			then myorder=10; 	
+if paramcd='UOTOLCRE' 			then myorder=11; 
+if paramcd='UCEMACRE' 			then myorder=12; 
+
+if paramcd='UHEMACRE' 			then myorder=13; 
+if paramcd='UBAPCRE' 			then myorder=14; 	
+if paramcd='UHMPMCRE' 			then myorder=15; 
+if paramcd='USBMACRE' 			then myorder=16; 
+
+if paramcd='UNNALCRE' 			then myorder=17; 
+if paramcd='UNEQCRE' 			then myorder=18; 	
+if paramcd='UPGF2CRE' 			then myorder=19; 
+if paramcd='UTXB2CRE' 			then myorder=20; 
+
+if paramcd='NIC' 				then myorder=21; 
+if paramcd='COT' 				then myorder=22; 
+
+**BLOQFL is the below limit of detection flag. it has two values: 'Y' which is BLOQ, and ''. We will make ''='N':;
+if BLOQFL='' then do; BLOQFL='N'; end;
+run;
+proc freq; 
+title4 '0. Check there are 22 correct BoExp'; 
+where myorder ne .; 
+tables myorder* paramcd*param/list missing nopercent nocum; 
+format param $54.;
+run;
+*******************************************************************************************
+End of 
+0. Create data set for mixed models analysis, and BLOQ analysis
+*******************************************************************************************;
+
+*******************************************************************************************
+1. Run mixed models for primary, secondary endpoints, risk markers, nicotine, and cotinine
+*******************************************************************************************;
+
+**Primary BoExp are 4 that compare reduction THS 2.2 to CC.
+We report reduction and reduction C.I.:;
 %macro mixedADBX(BoExp, title5);
 
 title4 "&BoExp";
@@ -204,27 +298,131 @@ UB=100-round(exp(upper)*100, 0.01); label UB='UB=exp(upper)';
 run;
 
 %mend mixedADBX;
-%mixedADBX(UMHBMCRE, "MHBMA: Tables 27, 34 in ZRHR-REXC-04-JP_CSR_Final_v1.0.pdf");
-%mixedADBX(U3HPMCRE, "3-HPMA: Tables 30, 34 in ZRHR-REXC-04-JP_CSR_Final_v1.0.pdf");
-%mixedADBX(USPMACRE, "S-PMA: Tables 33, 34 in ZRHR-REXC-04-JP_CSR_Final_v1.0.pdf");
-%mixedADBX(CARBXHGB, "COHb: Tables 24, 34 in ZRHR-REXC-04-JP_CSR_Final_v1.0.pdf");
+*value myorder
+1= 'UMHBMCRE'  
+2= 'U3HPMCRE' 
+3= 'USPMACRE' 
+4= 'CARBXHGB' 
+;
+%mixedADBX(UMHBMCRE, "MHBMA(Primary, shown Reduction C.I.): Tables 27, 34 in ZRHR-REXC-04-JP_CSR_Final_v1.0.pdf");
+%mixedADBX(U3HPMCRE, "3-HPMA(Primary, shown Reduction C.I.): Tables 30, 34 in ZRHR-REXC-04-JP_CSR_Final_v1.0.pdf");
+%mixedADBX(USPMACRE, "S-PMA(Primary, shown Reduction C.I.): Tables 33, 34 in ZRHR-REXC-04-JP_CSR_Final_v1.0.pdf");
+%mixedADBX(CARBXHGB, "COHb(Primary, shown Reduction C.I.): Tables 24, 34 in ZRHR-REXC-04-JP_CSR_Final_v1.0.pdf");
 
-%mixedADBX(CO, "Carbon Monoxide: Table 44 in ZRHR-REXC-04-JP_CSR_Final_v1.0.pdf");
-%mixedADBX(U1OHPCRE, "Total 1-OHP: Table 45 in ZRHR-REXC-04-JP_CSR_Final_v1.0.pdf");
-%mixedADBX(UNNNCRE, "Total NNN: Table 46 in ZRHR-REXC-04-JP_CSR_Final_v1.0.pdf");	
-%mixedADBX(U4ABPCRE, "4-ABP: Table 47 in ZRHR-REXC-04-JP_CSR_Final_v1.0.pdf");	
-%mixedADBX(U1NACRE, "1-NA: Table 48 in ZRHR-REXC-04-JP_CSR_Final_v1.0.pdf");	
-%mixedADBX(U2NACRE, "2-NA: Table 49 in ZRHR-REXC-04-JP_CSR_Final_v1.0.pdf");
-%mixedADBX(UOTOLCRE, "O-tol: Table 50 in ZRHR-REXC-04-JP_CSR_Final_v1.0.pdf");
-%mixedADBX(UCEMACRE, "CEMA: Tables 51 in ZRHR-REXC-04-JP_CSR_Final_v1.0.pdf");
-%mixedADBX(UHEMACRE, "HEMA: Tables 52 in ZRHR-REXC-04-JP_CSR_Final_v1.0.pdf");
-%mixedADBX(UBAPCRE, "B[a]P: Table 1 in ZRHR-REXC-04-JP_CSR_addendum v1.0.pdf");
-%mixedADBX(UHMPMCRE, "3-HMPMA: Table 53 in ZRHR-REXC-04-JP_CSR_Final_v1.0.pdf");	
-%mixedADBX(USBMACRE, "S-BMA: Table 54 in ZRHR-REXC-04-JP_CSR_Final_v1.0.pdf");
-%mixedADBX(UNNALCRE, "Total NNAL: Table 55 in ZRHR-REXC-04-JP_CSR_Final_v1.0.pdf");
-%mixedADBX(UNEQCRE, "NEQ: Table 56 in ZRHR-REXC-04-JP_CSR_Final_v1.0.pdf");
+**Secondary BoExp. 
+We report ratio and ratio C.I.:;
+%macro mixedADBX(BoExp, title5);
 
-**Nicotine and Cotinine using chg=aval-base;
+title4 "&BoExp";
+title5 &title5;
+
+ods output Diffs=lsmeans_&BoExp;
+	proc mixed data=work.rm_04JP;
+	where paramcd="&BoExp";
+	class trta sexc ucpdgr1;
+	model logaval=logbase trta sexc ucpdgr1;
+	lsmeans trta/pdiff=control('CC') alpha=0.05 cl;
+	lsmeans trta/pdiff=control('SA') alpha=0.05 cl;
+	run;
+
+data lsmeans_&BoExp;
+format note $130.;
+set lsmeans_&BoExp;
+BoExp="&BoExp";
+note=&title5;
+
+LSMRatio=round(exp(estimate)*100, 0.01); label LSMRatio='LSM Ratio';
+reduction=100-round(exp(estimate)*100, 0.01); label reduction='reduction=exp(estimate)';
+LB=round(exp(upper)*100, 0.01); label LB='LB=exp(upper)';
+UB=round(exp(lower)*100, 0.01); label UB='UB=exp(lower)';
+run;
+
+%mend mixedADBX;
+*value myorder
+5= 'CO' 		
+6= 'U1OHPCRE' 
+7= 'UNNNCRE' 	
+8= 'U4ABPCRE' 
+;
+%mixedADBX(CO, "Carbon Monoxide(Shown Ratio C.I.): Table 44 in ZRHR-REXC-04-JP_CSR_Final_v1.0.pdf");
+%mixedADBX(U1OHPCRE, "Total 1-OHP(Shown Ratio C.I.): Table 45 in ZRHR-REXC-04-JP_CSR_Final_v1.0.pdf");
+%mixedADBX(UNNNCRE, "Total NNN(Shown Ratio C.I.): Table 46 in ZRHR-REXC-04-JP_CSR_Final_v1.0.pdf");	
+%mixedADBX(U4ABPCRE, "4-ABP(Shown Ratio C.I.): Table 47 in ZRHR-REXC-04-JP_CSR_Final_v1.0.pdf");	
+
+*
+value myorder
+9= 'U1NACRE' 	
+10='U2NACRE' 	
+11='UOTOLCRE' 
+12='UCEMACRE' 
+;
+%mixedADBX(U1NACRE, "1-NA(Shown Ratio C.I.): Table 48 in ZRHR-REXC-04-JP_CSR_Final_v1.0.pdf");	
+%mixedADBX(U2NACRE, "2-NA(Shown Ratio C.I.): Table 49 in ZRHR-REXC-04-JP_CSR_Final_v1.0.pdf");
+%mixedADBX(UOTOLCRE, "O-tol(Shown Ratio C.I.): Table 50 in ZRHR-REXC-04-JP_CSR_Final_v1.0.pdf");
+%mixedADBX(UCEMACRE, "CEMA(Shown Ratio C.I.): Tables 51 in ZRHR-REXC-04-JP_CSR_Final_v1.0.pdf");
+
+*
+value myorder
+13='UHEMACRE' 
+14='UBAPCRE' 	
+15='UHMPMCRE' 
+16='USBMACRE' 
+
+17='UNNALCRE' 
+18='UNEQCRE' 	
+;
+%mixedADBX(UHEMACRE, "HEMA(Shown Ratio C.I.): Tables 52 in ZRHR-REXC-04-JP_CSR_Final_v1.0.pdf");
+%mixedADBX(UBAPCRE, "B[a]P(Shown Ratio C.I.): Table 1 in ZRHR-REXC-04-JP_CSR_addendum v1.0.pdf");
+%mixedADBX(UHMPMCRE, "3-HPMA(Shown Ratio C.I.): Table 53 in ZRHR-REXC-04-JP_CSR_Final_v1.0.pdf");	
+%mixedADBX(USBMACRE, "S-BMA(Shown Ratio C.I.): Table 54 in ZRHR-REXC-04-JP_CSR_Final_v1.0.pdf");
+
+%mixedADBX(UNNALCRE, "Total NNAL(Shown Ratio C.I.): Table 55 in ZRHR-REXC-04-JP_CSR_Final_v1.0.pdf");
+%mixedADBX(UNEQCRE, "NEQ(Shown Ratio C.I.): Table 56 in ZRHR-REXC-04-JP_CSR_Final_v1.0.pdf");
+
+***Risk markers:
+value myorder
+19='8-EPI-PGF2 ALPHA'
+20='11-DTX-B2'
+;
+*• Selected risk markers (expressed as quantity excreted and concentration adjusted for creatinine):
+8-epi-prostaglandine F2a (8-epi-PGF2a) and 11-dehydrothromboxane B2 (DTX-B2) measured in
+24-hour urine on Day 5:;
+%macro mixedADBX2(BoExp, title5);
+
+title4 "&BoExp";
+title5 &title5;
+
+ods output Diffs=lsmeans_&BoExp;
+	proc mixed data=work.adbx;
+where paramcd="&BoExp" & fasfl='Y' & anl02fl='Y' & avisit="DAY 5";
+
+	class trta sexc ucpdgr1;
+	model logaval=logbase trta sexc ucpdgr1;
+	lsmeans trta/pdiff=control('CC') alpha=0.05 cl;
+	lsmeans trta/pdiff=control('SA') alpha=0.05 cl;
+	run;
+
+data lsmeans_&BoExp;
+format note $130.;
+set lsmeans_&BoExp;
+BoExp="&BoExp";
+note=&title5;
+
+LSMRatio=round(exp(estimate)*100, 0.01); label LSMRatio='LSM Ratio';
+reduction=100-round(exp(estimate)*100, 0.01); label reduction='reduction=exp(estimate)';
+LB=round(exp(upper)*100, 0.01); label LB='LB=exp(upper)';
+UB=round(exp(lower)*100, 0.01); label UB='UB=exp(lower)';
+run;
+
+%mend mixedADBX2;
+**See also Table 15.2.4.45 in Clinical Study Report Appendix 15.2 - Tables.pdf; 
+%mixedADBX2(UPGF2CRE, "UPGF2CRE (8-epi-PGF2 Alpha)(Shown Ratio C.I.): Table 68 in ZRHR-REXC-04-JP_CSR_Final_v1.0.pdf");
+%mixedADBX2(UTXB2CRE, "UTXB2CRE (11-DTX-B2)(Shown Ratio C.I.): Table 69 in ZRHR-REXC-04-JP_CSR_Final_v1.0.pdf");
+
+*
+value myorder
+21='NIC' 		
+22='COT';
 %macro mixedADPC(BoExp, title5);
 
 title4 "&BoExp";
@@ -252,8 +450,8 @@ UB=round(lower, 0.01); label UB='UB=upper';**reverse labels because at the end '
 LB=round(upper, 0.01); label LB='LB=lower';
 run;
 %mend mixedADPC;
-%mixedADPC(NIC, "Nicotine: Table 57 in ZRHR-REXC-04-JP_CSR_Final_v1.0.pdf, analyses of 'chg' and report of THS-CC instead of Ratios, SA not reported");
-%mixedADPC(COT, "Cotinine: Table 60 in ZRHR-REXC-04-JP_CSR_Final_v1.0.pdf, analyses of 'chg' and report of THS-CC instead of Ratios, SA not reported");
+%mixedADPC(NIC, "Nicotine(Shown LSMean Differences): Table 57 in ZRHR-REXC-04-JP_CSR_Final_v1.0.pdf, analyses of 'chg' and report of THS-CC instead of Ratios, SA not reported");
+%mixedADPC(COT, "Cotinine(Shown LSMean Differences): Table 60 in ZRHR-REXC-04-JP_CSR_Final_v1.0.pdf, analyses of 'chg' and report of THS-CC instead of Ratios, SA not reported");
 
 %macro mixedADPC(BoExp, title5);
 
@@ -281,47 +479,23 @@ UB=round(lower, 0.01); label UB='UB=upper';**reverse labels because at the end '
 LB=round(upper, 0.01); label LB='LB=lower';
 run;
 %mend mixedADPC;
-%mixedADPC(NIC, "Nicotine: Table 57 in ZRHR-REXC-04-JP_CSR_Final_v1.0.pdf, analyses of 'chg' and report of THS-CC instead of Ratios, SA not reported");
-%mixedADPC(COT, "Cotinine: Table 60 in ZRHR-REXC-04-JP_CSR_Final_v1.0.pdf, analyses of 'chg' and report of THS-CC instead of Ratios, SA not reported");
+%mixedADPC(NIC, "Nicotine(Shown LSMean Differences): Table 57 in ZRHR-REXC-04-JP_CSR_Final_v1.0.pdf, analyses of 'chg' and report of THS-CC instead of Ratios, SA not reported");
+%mixedADPC(COT, "Cotinine(Shown LSMean Differences): Table 60 in ZRHR-REXC-04-JP_CSR_Final_v1.0.pdf, analyses of 'chg' and report of THS-CC instead of Ratios, SA not reported");
 
-
-**Max and Avg for nicotine, cotinine:;
-%macro mixedADPP(BoExp, title5);
-
-title4 "&BoExp";
-title5 &title5;
-
-ods output Diffs=lsmeans_&BoExp;
-	proc mixed data=work.rm_04JP;
-	where paramcd="&BoExp" & trta in ('THS 2.2','CC'); 
-
-	class trta sexc ucpdgr1;
-	model logaval= trta sexc ucpdgr1; **adam.ADPP does not have 'BASE';
-	lsmeans trta/pdiff=control('CC') alpha=0.05 cl;
-	run;
-
-data lsmeans_&BoExp;
-format note $130.;
-set lsmeans_&BoExp;
-BoExp="&BoExp";
-note=&title5;
-
-LSMRatio=round(exp(estimate)*100, 0.01); label LSMRatio='LSM Ratio';
-reduction=.; label reduction='reduction=estimate';**In this case, reduction is not reported;
-UB=round(exp(lower)*100, 0.01); label UB='UB=exp(upper)';**LB not for reduction, but for LSMRatio. LB becomes UB and vice versa;
-LB=round(exp(upper)*100, 0.01); label LB='LB=exp(lower)';
-run;
-
-%mend mixedADPP;
-%mixedADPP(NCAVG, "Nicotine average: Table 59 in ZRHR-REXC-04-JP_CSR_Final_v1.0 (no data for SA, see Listing 15.4.4.39 in Stat Output.pdf)");
-%mixedADPP(NCMAX, "Nicotine peak: Table 59 in ZRHR-REXC-04-JP_CSR_Final_v1.0. (no data for SA, see Listing 15.4.4.39 in Stat Output.pdf)");
-%mixedADPP(CCAVG, "Cotinine average: Table 62 in ZRHR-REXC-04-JP_CSR_Final_v1.0 (no data for SA, see Listing 15.4.4.39 in Stat Output.pdf)");
-%mixedADPP(CCMAX, "Cotinine peak: Table 62 in ZRHR-REXC-04-JP_CSR_Final_v1.0 (no data for SA, see Listing 15.4.4.39 in Stat Output.pdf)");
+*******************************************************************************************
+End of 
+1. Run mixed models for primary, secondary endpoints, risk markers, nicotine, and cotinine
+*******************************************************************************************;
 
 title4;
 title5;
 
-**report;
+*******************************************************************************************
+2. Print clean report
+(note: lst and log will be available to compare and check all results)
+*******************************************************************************************;
+
+**prepare data for report;
 data work.partI0;
 format BoExpTxt $28. note $154.;
 set 
@@ -345,15 +519,11 @@ LSMEANS_USBMACRE
 LSMEANS_UNNALCRE
 LSMEANS_UNEQCRE
 
+LSMEANS_UPGF2CRE
+LSMEANS_UTXB2CRE
+
 LSMEANS_NIC
 LSMEANS_COT
-LSMEANSB_NIC
-LSMEANSB_COT
-
-LSMEANS_NCAVG
-LSMEANS_NCMAX
-LSMEANS_CCAVG
-LSMEANS_CCMAX
 ;
 
 *for reduction, the UB is the LB and vice versa:;
@@ -363,6 +533,7 @@ if BoExp='UMHBMCRE' then BoExpTxt='MHBMA (pg/mg creat)';
 if BoExp='U3HPMCRE' then BoExpTxt='3-HPMA (ng/mg creat)';
 if BoExp='USPMACRE' then BoExpTxt='S-PMA (pg/mg creat)';
 if BoExp='CARBXHGB' then BoExpTxt='COHb (%)';
+
 if BoExp='CO' 		then BoExpTxt='Carbon monoxide';
 if BoExp='U1OHPCRE' then BoExpTxt='Total 1-OHP (pg/mg creat)';
 if BoExp='UNNNCRE' 	then BoExpTxt='Total NNN (pg/mg creat)';
@@ -373,27 +544,23 @@ if BoExp='UOTOLCRE' then BoExpTxt='O-tol (pg/mg creat)';
 if BoExp='UCEMACRE' then BoExpTxt='CEMA (ng/mg creat)';
 if BoExp='UHEMACRE' then BoExpTxt='HEMA(pg/mg creat)';
 if BoExp='UBAPCRE' 	then BoExpTxt='B[a]P (fg/mg creat)';
-if BoExp='UHMPMCRE' then BoExpTxt='3-HMPMA (ng/mg creat)';
+if BoExp='UHMPMCRE' then BoExpTxt='3-HPMA (ng/mg creat)';
 if BoExp='USBMACRE' then BoExpTxt='S-BMA (pg/mg creat)';
 if BoExp='UNNALCRE' then BoExpTxt='Total NNAL(pg/mg creat)';
 if BoExp='UNEQCRE' 	then BoExpTxt='NEQ (mg/g creat)';
 
+if BoExp='UPGF2CRE'	then BoExpTxt='8-epi-PGF2 Alpha (pg/mg creat)';
+if BoExp='UTXB2CRE'	then BoExpTxt='11-DTX-B2 (pg/mg creat)';
+
 if BoExp='NIC' 		then BoExpTxt='Nicotine (chg) (ng/ml)';
 if BoExp='COT' 		then BoExpTxt='Cotinine (chg) (ng/ml)';
 
-if BoExp='NCAVG' 	then BoExpTxt='Nicotine average (ng/ml)';
-if BoExp='NCMAX' 	then BoExpTxt='Nicotine peak (ng/ml)';
-if BoExp='CCAVG' 	then BoExpTxt='Cotinine average (ng/ml)';
-if BoExp='CCMAX' 	then BoExpTxt='Cotinine peak (ng/ml)';
 run;
 data work.partIA work.partIB;
 set work.partI0;
 if trta='THS 2.2' and _trta='CC' then output partIA;
 if trta='THS 2.2' and _trta='SA' then output partIB;
 run;
-
-**This data set will be printed as the ods rtf file in
-'V. Printout clean report (note: lst available to compare and check all results.)';
 
 data partI;
 merge 
@@ -406,30 +573,102 @@ reductionSA='Reduction THS 2.2/ SA in %' CISA='95% C.I. for reduction THS 2.2/ S
 
 run;
 proc freq data=work.partI; 
-title4 "Check that columns 'BoExpCC', 'BoExpSA' match then, merge was fine"; 
+title4 "0. Check that columns 'BoExpCC', 'BoExpSA' match then, merge was fine"; 
 tables BoExpCC*BoExpSA/list; 
 run;
 
 proc compare base=rm_THS.partI compare=work.partI;
-title4 "Old vs. new";
+title4 "Control changes by comparing old vs. new data sets";
 run;
-/*
-data rm_THS.partI;
-set work.partI;
-run;
-*/
+
+&permanent data rm_THS.partI;
+&permanent set work.partI;
+&permanent run;
+
 proc datasets lib=work nolist; 
 **delete data sets that may have common name in the following parts of this program;
   delete lsmeans:; 
 quit; 
 run;
+title3; title4; title5;
+
+ods rtf file = "\\fda.gov\WODC\CTP_Sandbox\OS\DPHS\StatisticsBranch\MRTPA\PMPSA MR0000059+\Montes de Oca\Programs\results\&program_name report &sysdate9..rtf";
+proc print noobs label data=work.partI;
+title5 "Report: Primary and Secondary BoExp ZRHR-REXC-04-JP";
+where trta='THS 2.2' & (_trta='CC' or _trta='SA');
+var BoExpTxtCC LSMRatioCC reductionCC CICC LSMRatioSA reductionSA CISA note;
+
+label
+BoExpTxtCC='BoExp'
+
+LSMRatioCC='THS/CC or THS-CC (see note)'
+reductionCC='% Reduction THS/CC (see note)'
+CICC='95% CI (see note)'
+
+LSMRatioSA='THS/SA or THS-SA (see note)'
+reductionSA='% Reduction THS/SA (see note)'
+CISA='95% CI (THS/SA or THS-SA) (see note)';
+
+format 
+trta _trta $10. note $130.;
+run;
+
+**Sticks or plugs consumption Day 1 to Day 5:;
+proc tabulate data=work.addx;
+title4 "Sticks or plugs consumption Day 1 to Day 5";
+
+**avalu='STICKS/DAY' is the sum of sticks per subject per day;
+where trta='THS 2.2' & paramcd='DTHS2_2' & avalu='STICKS/DAY' & avisit in ('DAY 1', 'DAY 2', 'DAY 3', 'DAY 4', 'DAY 5');
+class trta paramcd avisit ucpdgr1;
+var aval;
+
+tables (trta='Arm'),
+	aval=''*(n='N'*f=10.0 mean='Mean'*f=10.1 LCLM='LCLM' UCLM='UCLM')/rts= 35;
+
+
+tables (trta='Arm'*avisit='Day'),
+	aval=''*(n='N'*f=10.0 mean='Mean'*f=10.1 LCLM='LCLM' UCLM='UCLM')/rts= 35;
+
+tables (trta='Arm'*ucpdgr1),
+	aval=''*(n='N'*f=10.0 mean='Mean'*f=10.1 LCLM='LCLM' UCLM='UCLM')/rts= 35;
+
+tables (trta='Arm'*avisit='Day'*ucpdgr1),
+	aval=''*(n='N'*f=10.0 mean='Mean'*f=10.1 LCLM='LCLM' UCLM='UCLM')/rts= 35;
+
+run;
+title4;
+
+proc tabulate data=work.rm_04JP;
+title4 "Percent of values BLOQ, all arms, at DAY 5";
+where avisit in ('DAY 5') & paramcd in ('UMHBMCRE','U3HPMCRE','USPMACRE','CARBXHGB',
+										'CO','U1OHPCRE','UNNNCRE','U4ABPCRE',
+										'U1NACRE','U2NACRE','UOTOLCRE','UCEMACRE',
+										'UHEMACRE','UBAPCRE','UHMPMCRE','USBMACRE',
+										'UNNALCRE','UNEQCRE',
+										'UPGF2CRE','UTXB2CRE'
+										'NIC', 'COT');
+class myorder paramcd param bloqfl;
+
+tables myorder='BoExp'*param, bloqfl * (N='Subjects'*f=10.0 rowpctn='Row %'*f=10.2) all='Total Subjects'*f=10.0
+/misstext='0' rts=40;
+format myorder myorder.;
+run;
+
+ods rtf close;
+
+/*******************************************************************************************
+End of
+2. Print clean report
+(note: lst and log will be available to compare and check all results)
+*******************************************************************************************/
+
+
+/*******************************************************************************************
+3. Additional analysis
+*******************************************************************************************/
 
 *******************************************************************************************
-	End of I. Mixed models for primary and secondary endpoints
-*******************************************************************************************;
-
-*******************************************************************************************
-	II. Means, mixed and frequencies for exploratory
+	3.1. Means, mixed and frequencies for exploratory
 *******************************************************************************************;
 **Exploratory (page 4 of ZRHR-REXC-04-JP_CSR_Final_v1.0.pdf):
 
@@ -859,41 +1098,6 @@ run;
 %mend ExploreADBX;
 **similar results, not identical in Table 73 ZRHR-REXC-04-JP_CSR_Final_v1.0.pdf;
 %ExploreADBX(CYP2A6, "CYP2A6 enzymatic activity Day 6: Table 15.2.4.51 in Clinical Study Report Appendix 15.2 - Tables.pdf");
-
-*• Selected risk markers (expressed as quantity excreted and concentration adjusted for creatinine):
-8-epi-prostaglandine F2a (8-epi-PGF2a) and 11-dehydrothromboxane B2 (DTX-B2) measured in
-24-hour urine on Day 5:;
-%macro mixedADBX2(BoExp, title5);
-
-title4 "&BoExp";
-title5 &title5;
-
-ods output Diffs=lsmeans_&BoExp;
-	proc mixed data=work.adbx;
-where paramcd="&BoExp" & fasfl='Y' & anl02fl='Y' & avisit="DAY 5";
-
-	class trta sexc ucpdgr1;
-	model logaval=logbase trta sexc ucpdgr1;
-	lsmeans trta/pdiff=control('CC') alpha=0.05 cl;
-	lsmeans trta/pdiff=control('SA') alpha=0.05 cl;
-	run;
-
-data lsmeans_&BoExp;
-format note $130.;
-set lsmeans_&BoExp;
-BoExp="&BoExp";
-note=&title5;
-
-LSMRatio=round(exp(estimate)*100, 0.01); label LSMRatio='LSM Ratio';
-reduction=100-round(exp(estimate)*100, 0.01); label reduction='reduction=exp(estimate)';
-LB=100-round(exp(lower)*100, 0.01); label LB='LB=exp(lower)';
-UB=100-round(exp(upper)*100, 0.01); label UB='UB=exp(upper)';
-run;
-
-%mend mixedADBX2;
-**See also Table 15.2.4.45 in Clinical Study Report Appendix 15.2 - Tables.pdf; 
-%mixedADBX2(UPGF2CRE, "UPGF2CRE (8-epi-PGF2 Alpha): Table 68 in ZRHR-REXC-04-JP_CSR_Final_v1.0.pdf");
-%mixedADBX2(UTXB2CRE, "UTXB2CRE (11-DTX-B2): Table 69 in ZRHR-REXC-04-JP_CSR_Final_v1.0.pdf");
 **End of Solution of 1. To describe the following parameters...;
 
 **Solution of 2. This was answered in Primary- Secondary and 1. already:
@@ -1103,9 +1307,6 @@ value aval
 5='Strongly agree';
 run;
 
-
-
-
 %macro ExploreADQSPA(BoExp, title5);
 
 title4 "&BoExp";
@@ -1122,73 +1323,153 @@ format aval aval.;
 run;
 
 %mend ExploreADQSPA;
-***similar results, not identical. The problem is the denominator for DAY 0, it is 78, in the report is 80;
+***The denominators are wrong:;
 %ExploreADQSPA(HSSMOK,  "HST- The smoking of the CC/Products differs with the device: Table 15.2.4.60* in Clinical Study Report Appendix 15.2 - Tables.pdf");
-%ExploreADQSPA(HSENJ,   "HST- You enjoy smoking with the device as much as without it: Table 15.2.4.60* in Clinical Study Report Appendix 15.2 - Tables.pdf");
-%ExploreADQSPA(HSTASTE, "HST- The taste of the CC /products is different with the device: Table 15.2.4.60* in Clinical Study Report Appendix 15.2 - Tables.pdf");
-%ExploreADQSPA(HSEASY,  "HST- The device is easy to use: Table 15.2.4.60* in Clinical Study Report Appendix 15.2 - Tables.pdf");
-%ExploreADQSPA(HSDISTU, "HST- Your smoking is disturbed by the device: Table 15.2.4.60* in Clinical Study Report Appendix 15.2 - Tables.pdf");
+*%ExploreADQSPA(HSENJ,   "HST- You enjoy smoking with the device as much as without it: Table 15.2.4.60* in Clinical Study Report Appendix 15.2 - Tables.pdf");
+*%ExploreADQSPA(HSTASTE, "HST- The taste of the CC /products is different with the device: Table 15.2.4.60* in Clinical Study Report Appendix 15.2 - Tables.pdf");
+*%ExploreADQSPA(HSEASY,  "HST- The device is easy to use: Table 15.2.4.60* in Clinical Study Report Appendix 15.2 - Tables.pdf");
+*%ExploreADQSPA(HSDISTU, "HST- Your smoking is disturbed by the device: Table 15.2.4.60* in Clinical Study Report Appendix 15.2 - Tables.pdf");
 
-**Finding why there are only 78 individuals in THS Day 0:;
-data diff78;
-set ADQSPA(keep=subjidn paramcd avisit trta parcat1);
-if paramcd in ('HSSMOK','HSENJ','HSTASTE','HSEASY','HSDISTU') & avisit in('DAY 0') & trta in ('THS 2.2') & parcat1 in ('HUMAN SMOKING TOPOGRAPHY QUESTIONNAIRE');**see t_hstqu.pdf;
-proc sort nodupkey; by subjidn;
-data diff80;
-set ADQSPA(keep=subjidn paramcd avisit trta parcat1);
-if paramcd="HSSMOK" & avisit in('DAY 4') & trta in ('THS 2.2') & parcat1 in ('HUMAN SMOKING TOPOGRAPHY QUESTIONNAIRE');**see t_hstqu.pdf;
-proc sort nodupkey; by subjidn;
+**There are missing: this corrects the denominators:;
+data test;
+set adqspa(keep=subjidn paramcd trta avisit parcat1 aval);
+if paramcd in ('HSSMOK','HSENJ','HSTASTE','HSEASY','HSDISTU') & trta in ('THS 2.2', 'CC') & avisit in ('DAY 0', 'DAY 4') &
+parcat1 in ('HUMAN SMOKING TOPOGRAPHY QUESTIONNAIRE');**see t_hstqu.pdf;
 run;
-data diff2;**these two id do not have answer in HSSMOK;
-merge diff80(in=a keep=subjidn) diff78(in=b keep=subjidn);
-by subjidn;
-if a & ~b;
+proc freq data=test;
+tables paramcd*trta*avisit aval/nopercent norow list missing;
+format avisit trta $10. ;
 run;
-data diff;
-merge ADQSPA(keep=subjidn aval paramcd avisit trta parcat1) diff2(in=a);
-by subjidn;
-if a & paramcd in ('HSSMOK','HSENJ','HSTASTE','HSEASY','HSDISTU') & avisit in ('DAY 0', 'DAY 4') 
-	& trta in ('THS 2.2') & parcat1 in ('HUMAN SMOKING TOPOGRAPHY QUESTIONNAIRE');
-aval=.;
-run;
-proc print noobs n data=diff;
-title4 "Finding why there are only 78 individuals in THS DAY 0:";
-title5 "Subjects 140, 198 do not have info for questionnaire at Day 0:";
-var subjidn paramcd trta avisit aval;
-format aval aval.;
-run;
-title4; title5;
 
-data ADQSPA_DAY0A ADQSPA_DAY4;
-set ADQSPA(keep=subjidn paramcd trta parcat1 avisit aval);
+%macro HST_Q7880(paramcd, trta, avisit, dataout, title4);
 
-if paramcd in ('HSSMOK','HSENJ','HSTASTE','HSEASY','HSDISTU') & trta in ('THS 2.2', 'CC') 
-	& parcat1 in ('HUMAN SMOKING TOPOGRAPHY QUESTIONNAIRE') & avisit in ('DAY 0') then output ADQSPA_DAY0A;
+data temp;
+format avisit trta $10. ;
+set test;
+if paramcd="&paramcd" & trta=&TRTA & avisit=&AVISIT;
+run;
 
-if paramcd in ('HSSMOK','HSENJ','HSTASTE','HSEASY','HSDISTU') & trta in ('THS 2.2', 'CC') 
-	& parcat1 in ('HUMAN SMOKING TOPOGRAPHY QUESTIONNAIRE') & avisit in ('DAY 4') then output ADQSPA_DAY4;
-run;
-data ADQSPA_DAY0;
-set ADQSPA_DAY0A diff(in=b);
+data &dataout;
+set temp end=nomore; output;
+	
+if nomore then do;
+paramcd="&paramcd"; trta=&trta; avisit=&AVISIT; aval=.;
 
-*aval needs to be '' since it was '' for DAY 0:;
-if subjidn in (140, 198) & trta in ('THS 2.2') then do; aval=.; avisit='DAY 0'; end;
+*add rows until complete n:;
+output; output; 
+end;
+
+proc print n noobs data=&dataout(drop=parcat1);
+title4 "N should be &title4";
 run;
-data adqspa_plus2;
-set ADQSPA_DAY0 ADQSPA_DAY4;
+
+%mend HST_Q7880;
+
+%macro HST_Qsame(paramcd, trta, avisit, dataout, title4);*no changes here;
+data temp;
+format avisit trta $10. ;
+set test;
+if paramcd="&paramcd" & trta=&TRTA & avisit=&AVISIT;
 run;
-proc freq data=work.ADQSPA_DAY0;
-where paramcd="HSSMOK" & avisit in('DAY 0') & trta in ('THS 2.2', 'CC') & parcat1 in ('HUMAN SMOKING TOPOGRAPHY QUESTIONNAIRE');**see t_hstqu.pdf;
-tables avisit*aval*trta/norow missing;
-format aval aval.;
+
+data &dataout;
+set temp;
 run;
+
+%mend HST_Qsame;
+
+*
+HSDISTU     CC            DAY 0               40
+HSDISTU     CC            DAY 4               40
+HSDISTU     THS 2.2       DAY 0               78
+HSDISTU     THS 2.2       DAY 4               80
+;
+%HST_Qsame(HSDISTU, "CC", "DAY 0", HSDISTUCC0, 40);
+%HST_Qsame(HSDISTU, "CC", "DAY 4", HSDISTUCC4, 40);
+%HST_Q7880(HSDISTU, "THS 2.2", "DAY 0", HSDISTUTHS0, 80);
+%HST_Qsame(HSDISTU, "THS 2.2", "DAY 4", HSDISTUTHS4, 80);
+
+*
+HSEASY      CC            DAY 0               40
+HSEASY      CC            DAY 4               40
+HSEASY      THS 2.2       DAY 0               78
+HSEASY      THS 2.2       DAY 4               80
+;
+%HST_Qsame(HSEASY, "CC", "DAY 0", HSEASYCC0, 41);
+%HST_Qsame(HSEASY, "CC", "DAY 4", HSEASYCC4, 41);
+%HST_Q7880(HSEASY, "THS 2.2", "DAY 0", HSEASYTHS0, 80);
+%HST_Qsame(HSEASY, "THS 2.2", "DAY 4", HSEASYTHS4, 80);
+
+*
+HSENJ       CC            DAY 0               40
+HSENJ       CC            DAY 4               40
+HSENJ       THS 2.2       DAY 0               78
+HSENJ       THS 2.2       DAY 4               80
+;
+%HST_Qsame(HSENJ, "CC", "DAY 0", HSENJCC0, 41);
+%HST_Qsame(HSENJ, "CC", "DAY 4", HSENJCC4, 41);
+%HST_Q7880(HSENJ, "THS 2.2", "DAY 0", HSENJTHS0, 80);
+%HST_Qsame(HSENJ, "THS 2.2", "DAY 4", HSENJTHS4, 80);
+
+*
+HSSMOK      CC            DAY 0               40
+HSSMOK      CC            DAY 4               40
+HSSMOK      THS 2.2       DAY 0               78
+HSSMOK      THS 2.2       DAY 4               80
+;
+%HST_Qsame(HSSMOK, "CC", "DAY 0", HSSMOKCC0, 41);
+%HST_Qsame(HSSMOK, "CC", "DAY 4", HSSMOKCC4, 41);
+%HST_Q7880(HSSMOK, "THS 2.2", "DAY 0", HSSMOKTHS0, 80);
+%HST_Qsame(HSSMOK, "THS 2.2", "DAY 4", HSSMOKTHS4, 80);
+
+*
+HSTASTE     CC            DAY 0               40
+HSTASTE     CC            DAY 4               40
+HSTASTE     THS 2.2       DAY 0               78
+HSTASTE     THS 2.2       DAY 4               80
+;
+%HST_Qsame(HSTASTE, "CC", "DAY 0", HSTASTECC0, 41);
+%HST_Qsame(HSTASTE, "CC", "DAY 4", HSTASTECC4, 41);
+%HST_Q7880(HSTASTE, "THS 2.2", "DAY 0", HSTASTETHS0, 80);
+%HST_Qsame(HSTASTE, "THS 2.2", "DAY 4", HSTASTETHS4, 80);
+
+data HST_Q;
+set 
+
+HSDISTUCC0(in=a1)
+HSDISTUCC4(in=a2)
+HSDISTUTHS0(in=a3)
+HSDISTUTHS4(in=a4)
+
+HSEASYCC0(in=a5)
+HSEASYCC4(in=a6)
+HSEASYTHS0(in=a7)
+HSEASYTHS4(in=a8)
+
+HSENJCC0 (in=a9)
+HSENJCC4 (in=a10)
+HSENJTHS0 (in=a11)
+HSENJTHS4 (in=a12)
+
+HSSMOKCC0(in=a13)
+HSSMOKCC4(in=a14)
+HSSMOKTHS0(in=a15)
+HSSMOKTHS4(in=a16)
+
+HSTASTECC0(in=a17)
+HSTASTECC4(in=a18)
+HSTASTETHS0(in=a19)
+HSTASTETHS4(in=a20)
+;
+run;
+
 %macro ExploreADQSPA2(BoExp, title5);
 
 title4 "&BoExp";
 title5 &title5;
-*Table 15.2.4.60 in Clinical Study Report Appendix 15.2 - Tables.pdf;
+*Table 15.2.4.60 csr-v2-app-15_2-tables.pdf;
 
-proc freq data=work.ADQSPA_plus2;
+proc freq data=work.HST_Q;
 where paramcd="&BoExp" & avisit in('DAY 0', 'DAY 4') & trta in ('THS 2.2', 'CC') 
 	& parcat1 in ('HUMAN SMOKING TOPOGRAPHY QUESTIONNAIRE');**see t_hstqu.pdf;
 tables avisit*aval*trta/norow nopct missing out=freq_&BoExp outpct;
@@ -1203,36 +1484,16 @@ note=&title5;
 run;
 
 %mend ExploreADQSPA2;
-***Same results. The problem was the denominator for DAY 0, it is now 80;
-%ExploreADQSPA2(HSSMOK,  "HST- The smoking of the CC/Products differs with the device: Table 15.2.4.60 in Clinical Study Report Appendix 15.2 - Tables.pdf");
-%ExploreADQSPA2(HSENJ,   "HST- You enjoy smoking with the device as much as without it: Table 15.2.4.60 in Clinical Study Report Appendix 15.2 - Tables.pdf");
-%ExploreADQSPA2(HSTASTE, "HST- The taste of the CC /products is different with the device: Table 15.2.4.60 in Clinical Study Report Appendix 15.2 - Tables.pdf");
-%ExploreADQSPA2(HSEASY,  "HST- The device is easy to use: Table 15.2.4.60 in Clinical Study Report Appendix 15.2 - Tables.pdf");
-%ExploreADQSPA2(HSDISTU, "HST- Your smoking is disturbed by the device: Table 15.2.4.60 in Clinical Study Report Appendix 15.2 - Tables.pdf");
-
+***Same results. The problem was the denominator;
+%ExploreADQSPA2(HSSMOK,  "HST- The smoking of the CC/Products differs with the device: Table 15.2.4.60 csr-v2-app-15_2-tables.pdf");
+%ExploreADQSPA2(HSENJ,   "HST- You enjoy smoking with the device as much as without it: Table 15.2.4.60 csr-v2-app-15_2-tables.pdf");
+%ExploreADQSPA2(HSTASTE, "HST- The taste of the CC /products is different with the device: Table 15.2.4.60 csr-v2-app-15_2-tables.pdf");
+%ExploreADQSPA2(HSEASY,  "HST- The device is easy to use: Table 15.2.4.60 csr-v2-app-15_2-tables.pdf");
+%ExploreADQSPA2(HSDISTU, "HST- Your smoking is disturbed by the device: Table 15.2.4.60 csr-v2-app-15_2-tables.pdf");
 **end of Solution of 3...;
 
-proc tabulate data=work.addx;
-title4 "Sticks or plugs consumption";
-
-**avalu='STICKS/DAY' is the sum of sticks per subject per day;
-where trta='THS 2.2' & paramcd='DTHS2_2' & avalu='STICKS/DAY';
-
-*class trta paramcd avisit ucpdgr1;
-class trta paramcd avisit;
-
-var aval;
-
-*tables (trta='Arm'*paramcd='Daily THS 2.2 Administration'*avisit='Day'*ucpdgr1='ucpdgr1'),
-	aval=''*(n='N'*f=10.0 min='Min'*f=10.0 mean='Mean'*f=10.1 max='Max'*f=10.0)/rts= 35;
-
-tables (trta='Arm'*paramcd='Daily THS 2.2 Administration'*avisit='Day'),
-	aval=''*(n='N'*f=10.0 mean='Mean'*f=10.1 LCLM='LCLM' UCLM='UCLM')/rts= 35;
-
-run;
-
 **Theses data sets will be printed as the ods rtf file in
-'V. Printout clean report (note: lst available to compare and check all results.)';
+'VI. Printout clean report (note: lst available to compare and check all results.)';
 
 ***Exploratory report:;
 data partIImeans0;
@@ -1271,13 +1532,13 @@ meansCC='Means SA' CISA='95% C.I. SA'
 run;
 
 proc compare base=rm_THS.partIImeans compare=work.partIImeans;
-title4 "Old vs. new";
+title4 "Control changes by comparing old vs. new data sets";
 run;
-/*
-data rm_THS.partIImeans;
-set work.partIImeans;
-run;
-*/
+
+&permanent data rm_THS.partIImeans;
+&permanent set work.partIImeans;
+&permanent run;
+
 proc freq data=work.partIImeans; 
 title4 "Check"; 
 tables data*trtaTHS*trtaCC*trtaSA/list missing; 
@@ -1291,9 +1552,6 @@ lsmeans_QSUFACT2
 
 lsmeans_MNWRWDS1
 lsmeans_MNWRWDS2
-
-lsmeans_UPGF2CRE
-lsmeans_UTXB2CRE
 
 lsmeans_MCEQA  
 lsmeans_MCEQCR 
@@ -1369,13 +1627,13 @@ reductionSA='Reduction THS 2.2/ SA in %' CISA='95% C.I. THS 2.2/ SA' probtSA='p-
 run;
 
 proc compare base=rm_THS.partIIlsmeans compare=work.partIIlsmeans;
-title4 "Old vs. new";
+title4 "Control changes by comparing old vs. new data sets";
 run;
-/*
-data rm_THS.partIIlsmeans;
-set work.partIIlsmeans;
-run;
-*/
+
+&permanent data rm_THS.partIIlsmeans;
+&permanent set work.partIIlsmeans;
+&permanent run;
+
 proc freq data=work.partIIlsmeans; title4 "Check that left and rigth columns match"; 
 tables BoExpCC*BoExpSA/list missing; 
 run;
@@ -1394,7 +1652,7 @@ if a3 then data=3;
 if a4 then data=4;
 if a5 then data=5;
 run;
-proc print; run;
+
 data work.partIIfreqA work.partIIfreqB;
 set work.partIIfreq0(drop=percent pct_tabl pct_row);
 if trta='THS 2.2' then output partIIfreqA;
@@ -1417,24 +1675,76 @@ proc sort; by data avisit descending aval;
 run;
 
 proc compare base=rm_THS.partIIfreq compare=work.partIIfreq;
-title4 "Old vs. new";
+title4 "Control changes by comparing old vs. new data sets";
 run;
-/*
-data rm_THS.partIIfreq;
-set work.partIIfreq;
-run;
-*/
+
+&permanent data rm_THS.partIIfreq;
+&permanent set work.partIIfreq;
+&permanent run;
+
 proc freq data=work.partIIfreq; 
 title4 "Check that left and rigth columns match"; 
 tables BoExpTHS*BoExpCC/list missing; 
 run;
 
+proc print noobs label data=work.partIImeans;
+title5 "Report: Exploratory ZRHR-REXC-04-JP";
+*var data avisitTHS nTHS meanTHS ciTHS nCC meanCC ciCC nSA meanSA ciSA note;
+var data avisitTHS nTHS meanTHS nCC meanCC nSA meanSA note;
+
+label 
+avisitTHS='Visit' 
+
+nTHS='N THS' meanTHS='Mean THS' ciTHS='95% CI THS'
+nCC='N CC' meanCC='Mean CC' ciCC='95% CI CC'
+nSA='N SA' meanSA='Mean SA' ciSA='95% CI SA';
+
+format trta: avisit: $10. note $130.;
+run;
+proc print noobs label data=work.partIIlsmeans;
+title5 "Report: Exploratory ZRHR-REXC-04-JP";
+where trta='THS 2.2' & (_trta='CC' or _trta='SA');
+var BoExpTxtCC LSMRatioCC reductionCC CICC LSMRatioSA reductionSA CISA note;
+
+label
+BoExpTxtCC='BoExp'
+
+LSMRatioCC='THS/CC or THS-CC'
+reductionCC='% Reduction THS/CC'
+CICC='95% CI (THS/CC or THS-CC)'
+
+LSMRatioSA='THS/SA or THS-SA'
+reductionSA='% Reduction THS/SA'
+CISA='95% CI (THS/SA or THS-SA)';
+
+format 
+trta _trta $10. note $130.;
+run;
+proc print noobs label data=work.partIIfreq;
+title5 "Report: Exploratory ZRHR-REXC-04-JP";
+var BoExpTHS avisit trtaTHS countTHS pct_colTHS countCC pct_colCC note;
+
+label
+BoExpThs='BoExp'
+avisit='Visit'
+
+trtaTHS='Arm'
+countTHS='N THS 2.2'
+pct_colTHS='Col THS 2.2 %'
+
+countCC='N CC'
+pct_colCC'Col CC %';
+
+format 
+BoExp: trta: $10. note $130. pct: 10.2;
+run;
+
 *******************************************************************************************
-	End of II. Means, mixed and frequencies for exploratory
+	End of 3.1. Means, mixed and frequencies for exploratory
 *******************************************************************************************;
 
 *******************************************************************************************
-	III. Other clinical results
+	3.2. Other clinical results
 *******************************************************************************************;
 
 **4. To describe the following parameter over the course of the study in smokers
@@ -1559,11 +1869,11 @@ run;
 %mend mixedADBX;
 %mixedADBX(CYP1A2, "CYP1A2: 15.2.4.49 in Clinical Study Report Appendix 15.2 - Tables & Tables 63 in ZRHR-REXC-04-JP_CSR_Final_v1.0.pdf");
 *******************************************************************************************
-	End of III. Other clinical results
+	End of 3.2. Other clinical results
 *******************************************************************************************;
 
 *******************************************************************************************
-	IV. Sample size and power
+	3.3. Sample size and power
 *******************************************************************************************;
 
 **https://support.sas.com/documentation/cdl/en/statug/63347/HTML/default/viewer.htm#statug_power_a0000001005.htm
@@ -1593,82 +1903,11 @@ run;
 %power(0.20, 0.70); 
 
 *******************************************************************************************
-	End of IV. Sample size and power
+	End of 3.3. Sample size and power
 *******************************************************************************************;
-
-*******************************************************************************************
-	V. Printout clean report (note: lst available to compare and check all results.)
-*******************************************************************************************;
-title3; title4; title5;
-
-ods rtf file = "\\fda.gov\WODC\CTP_Sandbox\OS\DPHS\StatisticsBranch\MRTPA\PMPSA MR0000059+\Montes de Oca\Programs\results\&program_name report &sysdate9..rtf";
-proc print noobs label data=work.partI;
-title5 "Report: Primary and Secondary BoExp ZRHR-REXC-04-JP";
-where trta='THS 2.2' & (_trta='CC' or _trta='SA');
-var BoExpTxtCC LSMRatioCC reductionCC CICC LSMRatioSA reductionSA CISA note;
-format 
-trta _trta $10. note $130.;
-run;
-proc print noobs label data=work.partIImeans;
-title5 "Report: Exploratory ZRHR-REXC-04-JP";
-var data avisitTHS nTHS meanTHS ciTHS nCC meanCC ciCC nSA meanSA ciSA note;
-label 
-avisitTHS='avisit' nTHS='n THS' meanTHS='Mean THS' ciTHS='95% C.I. THS'
-nCC='n CC' meanCC='Mean CC' ciCC='95% C.I. CC'
-nSA='n SA' meanSA='Mean SA' ciSA='95% C.I. SA';
-format trta: avisit: $10. note $130.;
-run;
-proc print noobs label data=work.partIIlsmeans;
-title5 "Report: Exploratory ZRHR-REXC-04-JP";
-where trta='THS 2.2' & (_trta='CC' or _trta='SA');
-var BoExpTxtCC LSMRatioCC reductionCC CICC LSMRatioSA reductionSA CISA note;
-format 
-trta _trta $10. note $130.;
-run;
-proc print noobs label data=work.partIIfreq;
-title5 "Report: Exploratory ZRHR-REXC-04-JP";
-var BoExpTHS avisit trtaTHS countTHS pct_colTHS countCC pct_colCC note;
-format 
-BoExp: trta: $10. note $130. pct: 10.2;
-run;
-**Sticks or plugs consumption Day 1 to Day 5:;
-proc tabulate data=work.addx;
-title4 "Sticks or plugs consumption Day 1 to Day 5";
-**avalu='STICKS/DAY' is the sum of sticks per subject per day;
-where trta='THS 2.2' & paramcd='DTHS2_2' & avalu='STICKS/DAY' & avisit in ('DAY 1', 'DAY 2', 'DAY 3', 'DAY 4', 'DAY 5');
-class trta paramcd;
-var aval;
-
-tables (trta='Arm'*paramcd='Daily THS 2.2 Administration'),
-	aval=''*(n='N'*f=10.0 mean='Mean'*f=10.1 LCLM='LCLM' UCLM='UCLM')/rts= 35;
-run;
-proc tabulate data=work.addx;
-title4 "Sticks or plugs consumption Day 1 to Day 5";
-
-**avalu='STICKS/DAY' is the sum of sticks per subject per day;
-where trta='THS 2.2' & paramcd='DTHS2_2' & avalu='STICKS/DAY' & avisit in ('DAY 1', 'DAY 2', 'DAY 3', 'DAY 4', 'DAY 5');
-class trta paramcd avisit;
-var aval;
-
-tables (trta='Arm'*paramcd='Daily THS 2.2 Administration'*avisit='Day'),
-	aval=''*(n='N'*f=10.0 mean='Mean'*f=10.1 LCLM='LCLM' UCLM='UCLM')/rts= 35;
-run;
-proc tabulate data=work.addx;
-title4 "Sticks or plugs consumption Day 1 to Day 5";
-
-**avalu='STICKS/DAY' is the sum of sticks per subject per day;
-where trta='THS 2.2' & paramcd='DTHS2_2' & avalu='STICKS/DAY' & avisit in ('DAY 1', 'DAY 2', 'DAY 3', 'DAY 4', 'DAY 5');
-class trta paramcd ucpdgr1;
-var aval;
-
-tables (trta='Arm'*paramcd='Daily THS 2.2 Administration'*ucpdgr1),
-	aval=''*(n='N'*f=10.0 mean='Mean'*f=10.1 LCLM='LCLM' UCLM='UCLM')/rts= 35;
-run;
-
-ods rtf close;
 
 /*******************************************************************************************
-	End of V. Printout clean report (note: lst available to compare and check all results.)
+End of 3. Additional analysis
 *******************************************************************************************/
 
 /*******************************************************************************************
@@ -1679,9 +1918,10 @@ proc printto log=log; run;
 
 ods pdf close;
 
-
-
-
+/*******************************************************************************************
+End of \\fda.gov\WODC\CTP_Sandbox\OS\DPHS\StatisticsBranch\MRTPA\PMPSA MR0000059+\
+Montes de Oca\Programs\rm_MR0000059.sas
+*******************************************************************************************/
 
 
 
