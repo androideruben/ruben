@@ -1,5 +1,5 @@
 ###################################################################################################################################
-#rm_LowSES.R 
+#rm_Notes.R 
 #programmer: Ruben
 #Purpose: Simulation and analyses of ITP
 #Started on January 17, 2018
@@ -93,6 +93,13 @@ rr<-read.table("~/rm04_ITP/1-LowSES/data/iris.csv")
 resultsmy<- summary(rr)
 resultsmy
 
-
+###convert data to data frame and keep variables
+library(SASxport)
+rm_adbx<-read.xport("\\\\fda.gov/WODC/CTP_Sandbox/OS/DPHS/StatisticsBranch/MRTPA/PMPSA MR0000059+/Montes de Oca/04 REXC04JP/data/ADaM/adbx.xpt")
+head(rm_adbx)
+names(rm_adbx)
+XDF<-as.data.frame((rm_adbx))  #make data as data frame
+myvars<-names(XDF)[c(2,9,16,41,45,109)]
+X <- XDF[myvars]
 
 
