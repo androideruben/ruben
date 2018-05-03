@@ -94,6 +94,19 @@ rr<-read.table("~/rm04_ITP/1-LowSES/data/iris.csv")
 resultsmy<- summary(rr)
 resultsmy
 
+###sql:
+nhanes11 <- "select *, 
+                    avg(wtint2yr) as mean_wt, 
+                    sum(wtint2yr) as sum_wt,
+                    max(wtint2yr) as max_wt, 
+                    count(wtint2yr) as count_wt
+
+                 from demo2015 as a
+                 left join smq2015 as b
+                 on a.SEQN = b.SEQN
+group by a.RIAGENDR"
+sqldf(nhanes11)
+
 ###convert data to data frame and keep variables
 library(SASxport)
 rm_adbx<-read.xport("\\\\fda.gov/WODC/CTP_Sandbox/OS/DPHS/StatisticsBranch/MRTPA/PMPSA MR0000059+/Montes de Oca/04 REXC04JP/data/ADaM/adbx.xpt")
