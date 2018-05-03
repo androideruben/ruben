@@ -10,6 +10,7 @@
 ###getwd()
 ###dir()
 ###data()
+###demo2011 <-read.xport('./nhanes20112012/DEMO_G.XPT') #no need to type long working dir
 ##############################################
 
 ##LOG:
