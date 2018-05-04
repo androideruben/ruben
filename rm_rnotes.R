@@ -95,17 +95,24 @@ resultsmy<- summary(rr)
 resultsmy
 
 ###sql:
-nhanes11 <- "select *, 
-                    avg(wtint2yr) as mean_wt, 
-                    sum(wtint2yr) as sum_wt,
-                    max(wtint2yr) as max_wt, 
-                    count(wtint2yr) as count_wt
+#join data and analyze data:
+data <- "select a.SEQN, a.riagendr, a.wtint2yr,
+								b.SEQN, b.SMQ040,
+
+										count(a.SEQN) as count_seqn,
+                    round(avg(a.wtint2yr), 2) as mean_wt, 
+                    sum(a.wtint2yr) as sum_wt,
+                    max(a.wtint2yr) as max_wt, 
+										round(avg(b.SMQ040), 2) as mean_smq040
 
                  from demo2015 as a
                  left join smq2015 as b
                  on a.SEQN = b.SEQN
 group by a.RIAGENDR"
-sqldf(nhanes11)
+data2 <- sqldf(data)
+demokeep <- c("RIAGENDR", "mean_wt", "sum_wt", "max_wt", "count_seqn", "mean_smq040")
+nhanes11 <- data2[ , demokeep ]
+nhanes11
 
 ###convert data to data frame and keep variables
 library(SASxport)
