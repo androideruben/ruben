@@ -72,6 +72,14 @@
 
 ###DATA MANAGEMENT:
 
+rr<-read.xlsx("./8-ACS/data/st99_2_025_025B.xlsx", sheetName="Table 1", startRow=149, endRow=198)
+rr2 <- rename(rr, "FarmsHarvest2012"=NA., "AcresHarvest2012"=NA..1,	"QuantityHarvest2012"=NA..2, "FarmsIrrigated2012"=NA..3, "AcresIrrigated2012"=NA..4,	"FarmsHarvest2007"=NA..5,	"AcresHarvest2007"=NA..6,	"QuantityHarvest2007"=NA..7,	"FarmsIrrigated2007"=NA..8, "AcresIrrigated2007"=NA..9)
+summary(rr2)
+str(rr2) #data frame is like data sets in SAS
+
+rr2[rr2=="-"] <- 0  #replace by 0
+summary(rr2)
+
 data() #list internal data sets
 summary(iris) #iris is an internal data set
 
