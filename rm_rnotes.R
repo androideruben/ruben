@@ -26,6 +26,20 @@ for (i in 1:length(list.filenames))
 		}
 
 list.data
+
+#naming categories:
+race <- function(data) { 
+	factor(data$RIDRETH1, levels=c(1,2,3,4,5,.), labels=c("1. Mexican American","2. Hispanic", "3. White", "4. Black", "5. Other", "."))
+}
+
+sex <- function(data) { 
+	factor(data$RIAGENDR, levels=c(1,2,.), labels=c("1. Male", "2. Female", "."))
+}
+
+nhanes05$RIDRETH1 <-  race(nhanes05)
+nhanes05$RIAGENDR <-  sex(nhanes05)
+
+
 ##############################################
 
 ##LOG:
