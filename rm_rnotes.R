@@ -11,6 +11,21 @@
 ###dir()
 ###data()
 ###demo2011 <-read.xport('./nhanes20112012/DEMO_G.XPT') #no need to type long working dir
+
+#read multiple files in a directory:
+setwd("//fda.gov/WODC/CTP_Sandbox/OS/DPHS/StatisticsBranch/Team 2/Montes de Oca/rm02_EXPLORE/3-NHANES/data/nhanes20052006/")
+list.filenames <- list.files(pattern="*.XPT")
+
+# create an empty list that will serve as a container to receive the incoming files
+list.data<-list()
+
+# create a loop to read in your data
+for (i in 1:length(list.filenames))
+		{
+			list.data[[i]]<-read.xport(list.filenames[i])
+		}
+
+list.data
 ##############################################
 
 ##LOG:
