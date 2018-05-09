@@ -86,7 +86,6 @@ list.data
 ####################################################################################################################################
 
 ###DATA MANAGEMENT:
-
 rr<-read.xlsx("./8-ACS/data/st99_2_025_025B.xlsx", sheetName="Table 1", startRow=149, endRow=198)
 rr2 <- rename(rr, "FarmsHarvest2012"=NA., "AcresHarvest2012"=NA..1,	"QuantityHarvest2012"=NA..2, "FarmsIrrigated2012"=NA..3, "AcresIrrigated2012"=NA..4,	"FarmsHarvest2007"=NA..5,	"AcresHarvest2007"=NA..6,	"QuantityHarvest2007"=NA..7,	"FarmsIrrigated2007"=NA..8, "AcresIrrigated2007"=NA..9)
 summary(rr2)
@@ -144,6 +143,10 @@ y[sample(150, 15), sample(4, 1)] <- 99
 
 all.equal(x, y) # using all.equal
 x[sapply(1:ncol(x), function(z) {x[, z]!=y[, z]})] 
+
+library(compare)
+compare(nhanes15, compare15, allowAll=T)
+names(compare15)
 
 ###convert data to data frame and keep variables
 library(SASxport)
