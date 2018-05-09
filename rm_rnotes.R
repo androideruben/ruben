@@ -137,6 +137,14 @@ demokeep <- c("RIAGENDR", "mean_wt", "sum_wt", "max_wt", "count_seqn", "mean_smq
 nhanes11 <- data2[ , demokeep ]
 nhanes11
 
+##proc compare:
+y <- x <- iris # x & y copies of iris
+## change 15 elements from a random column
+y[sample(150, 15), sample(4, 1)] <- 99
+
+all.equal(x, y) # using all.equal
+x[sapply(1:ncol(x), function(z) {x[, z]!=y[, z]})] 
+
 ###convert data to data frame and keep variables
 library(SASxport)
 rm_adbx<-read.xport("\\\\fda.gov/WODC/CTP_Sandbox/OS/DPHS/StatisticsBranch/MRTPA/PMPSA MR0000059+/Montes de Oca/04 REXC04JP/data/ADaM/adbx.xpt")
