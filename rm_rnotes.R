@@ -131,6 +131,19 @@ resultsmy<- summary(rr)
 resultsmy
 
 ###sql:
+data <-  function(dataA, dataB) {
+sqldf("select a.SEQN, b.SEQN as seqnB, b.SMQ040
+
+                 from smq2005 as b
+                 left join demo2005 as a
+                 on seqnB=a.SEQN where (b.SMQ040<=0)
+		group by smq040
+	")
+}
+
+rr <- data(demo2005, smq2005)
+rr
+
 #join data and analyze data:
 data <- "select a.SEQN, a.riagendr, a.wtint2yr,
 		b.SEQN, b.SMQ040,
