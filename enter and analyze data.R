@@ -37,8 +37,11 @@ oxygen <- c(44.609,54.297,49.874,45.681,39.442,50.541,44.754,51.855,40.836,46.77
 time <- c(11.37,  8.65,NA, 11.95, 13.08, 10.13, 11.12, 10.33, 10.95, 10.25, 12.63,  9.63, 11.08, 10.47,NA, 10.50,10.07,
  8.17,11.63,10.85, 8.63,14.03,10.60, 8.95,10.00,10.08,11.17, 8.92,12.88, 9.93,11.50)
 fitness <- data.frame(age, weight, oxygen, time)
+describe(fitness)
 cor(age,weight)
 cor(fitness, use="complete.obs", method="pearson")
+cor(fitness, use="complete.obs", method="spearman")
+
 cor(fitness, use="complete.obs")
 
 library(Hmisc)
@@ -75,3 +78,4 @@ xfit<-seq(min(weight),max(weight),length=40)
 yfit<-dnorm(xfit,mean=mean(weight),sd=sd(weight))
 yfit <- yfit*diff(h$mids[1:2])*length(weight)
 lines(xfit, yfit, col="blue", lwd=2)
+
