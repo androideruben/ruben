@@ -1,15 +1,22 @@
-##http://support.sas.com/documentation/cdl/en/procstat/66703/HTML/default/viewer.htm#procstat_univariate_examples01.htm
+###########################################################################
+#programmer: ruben montes de oca
+#starting date: july 2018
+#purpose: practice data
+###########################################################################
 
-#library(Hmisc)
+library(Hmisc)
 library(psych)
 
-# create a data frame from scratch
-patientID <- c('CK','CP','CP','FC','DS','JW','GS','HH','SS','BL','JI','RW','JW','SB','AB','FR','ES','MC','KD','BH','NS','EC')	
+###we will enter data and do basic statistics:
 
+##http://support.sas.com/documentation/cdl/en/procstat/66703/HTML/default/viewer.htm#procstat_univariate_examples01.htm
+
+#create a data frame from scratch: columns will be variables and rows will be subjects
+#data frame is similar to data in SAS or Excel and can combine text and numeric values:
+
+patientID <- c('CK','CP','CP','FC','DS','JW','GS','HH','SS','BL','JI','RW','JW','SB','AB','FR','ES','MC','KD','BH','NS','EC')	
 Systolic <- c(120,120,165,125,110,134,122,122,96, 140,110,133,130,118,122,100,120,119,108,120,122,112)
-	
 Diastolic <- c(50,75,11,76,50,80,70,82,60,90,40,60,80,76,78,70,70,66,54,65,78,62)
-	
 BPressure <- data.frame(patientID, Systolic, Diastolic)
 	
 summary(BPressure)
