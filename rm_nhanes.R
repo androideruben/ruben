@@ -1,8 +1,6 @@
 ##########################################################################################
-# NHANES 2009-2010 demographics and questionnaire files	
-# Program: \\fda.gov\WODC\CTP_Sandbox\OS\DPHS\StatisticsBranch\Team 2\Montes de Oca\
-# rm04_NHANES\code\NHANES 2009-2010.R
 # Programmer: Ruben Montes de Oca FDA- CTP
+#starting date: may 2018
 # Purpose: Analyze the 2009-2010 NHANES demographics and questionnaire components				
 ##########################################################################################
 
@@ -88,18 +86,18 @@ nhanes13 <- data(demo2013, smq2013)
 nhanes15 <- data(demo2015, smq2015)
 
 #add a column year:
-nhanes05$year=2005
-nhanes07$year=2007
-nhanes09$year=2009
-nhanes11$year=2011
-nhanes13$year=2013
-nhanes15$year=2015
+nhanes05$year <- 2005
+nhanes07$year <- 2007
+nhanes09$year <- 2009
+nhanes11$year <- 2011
+nhanes13$year <- 2013
+nhanes15$year <- 2015
 
 #concatenate as a long data set:
 nhanesL <- rbind(nhanes05, nhanes07, nhanes09, nhanes11, nhanes13, nhanes15)
 summary(nhanesL)
 
-#naming categories:
+#functions for naming categories (format in SAS):
 race <- function(data) { 
 					factor(data$RIDRETH1, levels=c(1,2,3,4,5,.), 
 					labels=c("1. Mexican American","2. Hispanic", 
@@ -115,7 +113,7 @@ nhanesL$RIDRETH1 <-  race(nhanesL)
 nhanesL$RIAGENDR <-  sex(nhanesL)
 
 age.summary <- function(data){ summary(data$RIDAGEYR)}
-age.summary(nhanesL)
+age.summary(nhanesL)  #age summary for the nhanesL data
 
 #Check missing (long output):
 #is.na(nhanesL)
@@ -142,12 +140,14 @@ save(nhanesL, file="nhanesL.rda")
 
 head(nhanesL)
 summary(nhanesL)
+
 keep= c("RIDAGEYR", "year")
 
 rr <- nhanesL[keep]
 head(rr)
 
 rrsumm <- ddply(rr, c("year"), summarise, age=mean(RIDAGEYR), sd=sd(RIDAGEYR))
+rrsumm
 
 #unweighted plots:
 ggplot(data=rrsumm, aes(x=year, y=age)) + geom_line()
@@ -219,6 +219,8 @@ svytotal(~one, nhanesL.svydesign)
 
 #by smq040cat2 category
 svyby(~one, ~smq040cat2, nhanesL.svydesign, svytotal)
+svyby(~RIDAGEYR, ~smq040cat2, nhanesL.svydesign, svytotal)
+svyby(~RIDRETH1, ~smq040cat2, nhanesL.svydesign, svytotal)
 
 #calculate means
 svymean(~RIDAGEYR, design=nhanesL.svydesign)
@@ -320,16 +322,46 @@ glimpse(nhanesL)
 CrossTable(nhanesL$RIAGENDR,nhanesL$SMQ040, digits=2, prop.c=F, prop.t=F, 
 	prop.chisq=F, chisq=T, dnn=c("RIAGENDR", "SMQ040"))
 
+
+#output files:
+
+sink("//fda.gov/WODC/CTP_Sandbox/OS/DPHS/StatisticsBranch/Team 2/Montes de Oca/rm_EXPLORE/3-NHANES/data/ruben output.txt")
+
+print(table(nhanesL$SMQ040, useNA="ifany"))
+print(summary(nhanesL$SEQN))
+glimpse(nhanesL)
+print(CrossTable(nhanesL$RIAGENDR,nhanesL$SMQ040, digits=2, prop.c=F, prop.t=F, 
+	prop.chisq=F, chisq=T, dnn=c("RIAGENDR", "SMQ040")))
+
+sink()
+
+
+pdf("//fda.gov/WODC/CTP_Sandbox/OS/DPHS/StatisticsBranch/Team 2/Montes de Oca/rm_EXPLORE/3-NHANES/data/ruben plot.pdf")
+ggplot(data=rrsumm, aes(x=year, y=age)) + geom_line()
+graphics.off()
+
 ##########################################################################################
 # End of //fda.gov/WODC/CTP_Sandbox/OS/DPHS/StatisticsBranch/Team 2/
 #Montes de Oca/rm_EXPLORE/3-NHANES/dat/code/NHANES 2009-2010.R
 ##########################################################################################
 
+#http://www.sthda.com/english/wiki/r-xlsx-package-a-quick-start-guide-to-manipulate-excel-files-in-r
+
+write.csv(mtcars, "mtcars.csv")
+mycars <-  read.csv("//fda.gov/WODC/CTP_Sandbox/OS/DPHS/StatisticsBranch/Team 2/Montes de Oca/rm_EXPLORE/3-NHANES/data/mtcars.csv", header=T, sep=",")
+
+library(xlsx)
+write.xlsx(mtcars, "//fda.gov/WODC/CTP_Sandbox/OS/DPHS/StatisticsBranch/Team 2/Montes de Oca/rm_EXPLORE/3-NHANES/data/mtcars.xlsx")
+mycarsxlsx <- read.xlsx("//fda.gov/WODC/CTP_Sandbox/OS/DPHS/StatisticsBranch/Team 2/Montes de Oca/rm_EXPLORE/3-NHANES/data/mtcars.xlsx", 
+	header=T, sheetName="Sheet1", startRow=0, endRow=32, col.names=T, startColumn=2)
+mycarsxlsx
+
+library(readxl)
+read_excel(path, sheet = NULL, range = NULL, col_names = TRUE,
+  col_types = NULL, na = "", trim_ws = TRUE, skip = 0, n_max = Inf,
+  guess_max = min(1000, n_max))
 
 
-
-
-
-
-
-
+mycarsxlsx <- read_excel("//fda.gov/WODC/CTP_Sandbox/OS/DPHS/StatisticsBranch/Team 2/Montes de Oca/rm_EXPLORE/3-NHANES/data/mtcars.xlsx", 
+	col_names=T, sheet="Sheet1", range="A1:B15")
+mycarsxlsx
