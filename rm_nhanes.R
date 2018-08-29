@@ -352,16 +352,28 @@ mycars <-  read.csv("//fda.gov/WODC/CTP_Sandbox/OS/DPHS/StatisticsBranch/Team 2/
 
 library(xlsx)
 write.xlsx(mtcars, "//fda.gov/WODC/CTP_Sandbox/OS/DPHS/StatisticsBranch/Team 2/Montes de Oca/rm_EXPLORE/3-NHANES/data/mtcars.xlsx")
-mycarsxlsx <- read.xlsx("//fda.gov/WODC/CTP_Sandbox/OS/DPHS/StatisticsBranch/Team 2/Montes de Oca/rm_EXPLORE/3-NHANES/data/mtcars.xlsx", 
-	header=T, sheetName="Sheet1", startRow=0, endRow=32, col.names=T, startColumn=2)
-mycarsxlsx
 
 library(readxl)
-read_excel(path, sheet = NULL, range = NULL, col_names = TRUE,
-  col_types = NULL, na = "", trim_ws = TRUE, skip = 0, n_max = Inf,
-  guess_max = min(1000, n_max))
-
-
 mycarsxlsx <- read_excel("//fda.gov/WODC/CTP_Sandbox/OS/DPHS/StatisticsBranch/Team 2/Montes de Oca/rm_EXPLORE/3-NHANES/data/mtcars.xlsx", 
 	col_names=T, sheet="Sheet1", range="A1:B15")
 mycarsxlsx
+
+mycarsxlsx2 <- read_excel("//fda.gov/WODC/CTP_Sandbox/OS/DPHS/StatisticsBranch/Team 2/Montes de Oca/rm_EXPLORE/3-NHANES/data/mtcars.xlsx", 
+	col_names=T, sheet="Sheet1", range="A1:c15")
+mycarsxlsx2
+
+mycarsxlsx3 <- read_excel("//fda.gov/WODC/CTP_Sandbox/OS/DPHS/StatisticsBranch/Team 2/Montes de Oca/rm_EXPLORE/3-NHANES/data/mtcars.xlsx", 
+	col_names=T, sheet="Sheet1", range="A1:d15")
+mycarsxlsx3
+
+library(xlsx)
+# Write the first data set in a new workbook multiple.xlsx
+write.xlsx(mycarsxlsx, file="multiple.xlsx", sheetName="one", append=FALSE)
+# Add a second data set in a new worksheet
+write.xlsx(mycarsxlsx2, file="multiple.xlsx", sheetName="two", append=TRUE)
+# Add a third data set
+write.xlsx(mycarsxlsx3, file="multiple.xlsx", sheetName="three", append=TRUE)
+
+
+
+
