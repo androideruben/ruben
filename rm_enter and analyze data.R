@@ -19,6 +19,9 @@ library(psych)
 #create a data frame from scratch: columns will be variables and rows will be subjects
 #data frame is similar to data in SAS or Excel and can combine text and numeric values:
 
+#COMBINE objects into a vector: 
+#https://www.statmethods.net/input/datatypes.html
+
 patientID <- c('CK','CP','CP','FC','DS','JW','GS','HH','SS','BL','JI','RW','JW','SB','AB','FR','ES','MC','KD','BH','NS','EC')	
 Systolic <- c(120,120,165,125,110,134,122,122,96, 140,110,133,130,118,122,100,120,119,108,120,122,112)
 Diastolic <- c(50,75,11,76,50,80,70,82,60,90,40,60,80,76,78,70,70,66,54,65,78,62)
@@ -126,6 +129,25 @@ write.xlsx(mycarsxlsx, file="multiple.xlsx", sheetName="one", append=FALSE)
 write.xlsx(mycarsxlsx2, file="multiple.xlsx", sheetName="two", append=TRUE)
 # Add a third data set
 write.xlsx(mycarsxlsx3, file="multiple.xlsx", sheetName="three", append=TRUE)
+
+###3. read large data set:
+StormData <-  read.csv("//fda.gov/WODC/CTP_Sandbox/OS/DPHS/StatisticsBranch/Team 2/Montes de Oca/rm_EXPLORE/0-Misc/data/repdata_data_StormData.csv", header=T, sep=",")
+
+summary(StormData)
+head(StormData)
+nrow(StormData); ncol(StormData)
+length(StormData)
+str(StormData) #structure
+ls()
+
+summary(StormData$STATE__)   #num
+summary(StormData$BGN_DATE)  #Factor
+summary(StormData$COUNTY)    #num
+summary(StormData$COUNTYENDN) #logi
+summary(StormData$F)          #int
+
+
+
 
 ##########################################################################################
 # End of rm_EXPLORE/0-MISC/code/rm_enter and analyze.R
