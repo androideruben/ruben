@@ -146,13 +146,44 @@ summary(StormData$COUNTY)    #num
 summary(StormData$COUNTYENDN) #logi
 summary(StormData$F)          #int
 
+#work with dates:
+#https://www.stat.berkeley.edu/~s133/dates.html
+
+summary(StormData$BGN_DATE)  #date time
+bgn_date <- as.Date(StormData$BGN_DATE, format='%m/%d/%Y')
+mean(bgn_date)
+max(bgn_date)
+min(bgn_date)
+summary(bgn_date) #can now calculate min, max...
+
+#add bgn_date as a new column:
+StormData$bgn_date <- bgn_date
+str(StormData) #added!
 
 
+#box plots:
+#https://www.statmethods.net/graphs/boxplot.html
+
+boxplot(bgn_date~StormData$STATE__) #whaaat?
+
+boxplot(StormData$bgn_date) #better
+boxplot(bgn_date~STATE, data=StormData, subset=STATE %in% c('AK', "AZ"), main="bgn_date~STATE", xlab="States", ylab="Dates") #whaaat?
+
+#keep vars
+keep= c("STATE", "bgn_date")
+rr <- StormData[keep]
+head(rr)
+
+# convert STATE to a factor
+rr$STATE <- as.factor(rr$STATE)
+rr <- rr[rr$STATE %in% c('AK', "AZ"),]
+rr$STATE <- droplevels(rr$STATE)
+summary(rr)
+boxplot(bgn_date~STATE, data=rr,  main="bgn_date~STATE rr data", xlab="States", ylab="Dates") #whaaat?
 
 ##########################################################################################
 # End of rm_EXPLORE/0-MISC/code/rm_enter and analyze.R
 ##########################################################################################
-
 
 
 
