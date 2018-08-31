@@ -174,12 +174,31 @@ keep= c("STATE", "bgn_date")
 rr <- StormData[keep]
 head(rr)
 
+#A.
 # convert STATE to a factor
 rr$STATE <- as.factor(rr$STATE)
 rr <- rr[rr$STATE %in% c('AK', "AZ"),]
 rr$STATE <- droplevels(rr$STATE)
 summary(rr)
-boxplot(bgn_date~STATE, data=rr,  main="bgn_date~STATE rr data", xlab="States", ylab="Dates") #whaaat?
+boxplot(bgn_date~STATE, data=rr,  main="bgn_date~STATE rr data", xlab="States", ylab="Dates") #good
+
+#or B.
+# using subset function
+newdata <- subset(StormData, STATE %in% c("AK", "AZ"), select=c(STATE, bgn_date))
+newdata$STATE <- droplevels(newdata$STATE)
+summary(newdata)
+boxplot(bgn_date~STATE, data=newdata,  main="bgn_date~STATE rr data", xlab="States", ylab="Dates") #good
+
+#compare data sets:
+library(arsenal)
+
+compare(rr, newdata)
+summary(compare(rr, newdata))
+
+compare(rr, StormData)
+summary(compare(rr, newdata))
+
+
 
 ##########################################################################################
 # End of rm_EXPLORE/0-MISC/code/rm_enter and analyze.R
