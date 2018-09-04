@@ -198,15 +198,43 @@ summary(compare(rr, newdata))
 compare(rr, StormData)
 summary(compare(rr, newdata))
 
+#Time series:
+data(airpass, package="faraway")
 
+plot (pass~year, data=airpass, type="l", ylab="Passengers") #l is lines
+?plot
+
+plot(sin, -pi, 2*pi) 
+x <- seq(0,8*pi,length.out=100)
+x
+y <- sin(x)
+plot(x,y,type="l")
+
+#If y is a function of x, you can use curve if you like: 
+curve(sin, to = 2*pi) 
+curve(x, to = 2*pi) 
+
+#create new data using a function RxR->R
+col <- function(x,y) {airpass[,x]+y}
+col(1, 100)
+col(2, 2)
+
+airpass2 <- data.frame(col(1,100), col(2,1))
+names(airpass2) <- c("pass", "year")
+str(airpass2)
+compare(airpass, airpass2, allowAll=T)
+summary(compare(airpass, airpass2, allowAll=T))
+
+airpass
+summary(rr)
+curve(pasajeros~year, data=airpass)
+
+sessionInfo()
+
+packinfo <- installed.packages(fields = c("Package", "Version"))
+packinfo[,c("Package", "Version")]
 
 ##########################################################################################
 # End of rm_EXPLORE/0-MISC/code/rm_enter and analyze.R
 ##########################################################################################
-
-
-
-
-
-
 
