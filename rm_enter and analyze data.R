@@ -189,15 +189,6 @@ newdata$STATE <- droplevels(newdata$STATE)
 summary(newdata)
 boxplot(bgn_date~STATE, data=newdata,  main="bgn_date~STATE rr data", xlab="States", ylab="Dates") #good
 
-#compare data sets:
-library(arsenal)
-
-compare(rr, newdata)
-summary(compare(rr, newdata))
-
-compare(rr, StormData)
-summary(compare(rr, newdata))
-
 #Time series:
 data(airpass, package="faraway")
 
@@ -222,7 +213,10 @@ col(2, 2)
 airpass2 <- data.frame(col(1,100), col(2,1))
 names(airpass2) <- c("pass", "year")
 str(airpass2)
-compare(airpass, airpass2, allowAll=T)
+
+#compare data sets:
+library(arsenal)                                                        
+compare(airpass, airpass2, allowAll=T, by="pass")
 summary(compare(airpass, airpass2, allowAll=T))
 
 airpass
@@ -233,6 +227,44 @@ sessionInfo()
 
 packinfo <- installed.packages(fields = c("Package", "Version"))
 packinfo[,c("Package", "Version")]
+
+#IPSUR p19:
+stripchart(precip, xlab="rainfall"); head(precip,10); str(precip)
+stripchart(rivers, method="jitter", xlab="length"); head(rivers)
+stripchart(discoveries, method="stack", xlab="number")
+
+hist(precip, main = "")
+hist(precip, freq = FALSE, main = "IPSUR p20")
+hist(precip, freq = T, xlab="precipitation mm", xlim=c(-5.00, 90.00), breaks=5, main = "IPSUR p20")
+
+summary(precip)
+str(precip)
+
+hist(rivers)
+hist(discoveries)
+
+library(aplpack)
+stem.leaf(precip, depth=F)
+summary(precip)
+s <- sort(precip)
+s
+
+#quartiles 1.statistics wiki p29
+p29 <- c(1,3,5,8,9,12,24,25,28,30,41,50)
+p29
+
+#The function "summary" is based on a definition of quantiles that is biased 
+#to equate the min to the 0%-quantile and max to the 100%-quantile. "The 
+#algorithm linearly interpolates between order statistics of x, assuming 
+#that the ith order statistic is the (i-1)/(length(x)-1) quantile:"
+
+summary(p29)
+quantile(p29, c(0.25, 0.5, 0.75), type=1)
+quantile(p29, c(0.25, 0.5, 0.75), type=2)
+quantile(p29, c(0.25, 0.5, 0.75), type=3)
+?quantile
+
+fivenum(p29)
 
 ##########################################################################################
 # End of rm_EXPLORE/0-MISC/code/rm_enter and analyze.R
