@@ -6,7 +6,8 @@
 #starting date: july 2018
 ###########################################################################
 
-setwd("//fda.gov/WODC/CTP_Sandbox/OS/DPHS/StatisticsBranch/Team 2/Montes de Oca/rm_EXPLORE/0-Misc/data/")
+#setwd("//fda.gov/WODC/CTP_Sandbox/OS/DPHS/StatisticsBranch/Team 2/Montes de Oca/rm_EXPLORE/0-Misc/data/")
+setwd("rm_EXPLORE/0-Misc/data/")
 getwd()
 
 library(Hmisc)
@@ -265,6 +266,108 @@ quantile(p29, c(0.25, 0.5, 0.75), type=3)
 ?quantile
 
 fivenum(p29)
+
+
+##import data
+csvACS <-  read.csv("acs/ss05hak.csv", header=T, sep=",")
+head(csvACS)
+names(csvACS)
+typeof(csvACS)
+
+library(sas7bdat)
+sasACS <- read.sas7bdat("acs/psam_h02.sas7bdat",stringsAsFactors=FALSE) #not very good, read_sas is better
+head(sasACS)
+names(sasACS)
+str(csvACS)
+typeof(sasACS)
+
+library(haven)
+
+sasACS <- read_sas("acs/psam_h02.sas7bdat", cols_only = c("SERIALNO",  "DIVISION", "PUMA",  "REGION", "ST", "ADJUST", "WGTP"))
+#zap_formats(sasACS)
+head(sasACS)
+names(sasACS)
+str(sasACS)
+typeof(sasACS)
+
+
+PATH_sas <- 'https://stats.idre.ucla.edu/wp-content/uploads/2016/02/binary.sas7bdat'
+df <- read_sas(PATH_sas)
+head(df)
+
+install.packages("RCurl")
+library(RCurl)
+url <- download.file(url='https://www2.census.gov/programs-surveys/acs/data/pums/2005/pchak.zip', destfile='localfile.zip', method='curl')
+
+
+df <- read_sas(path_sas)
+
+
+library(arsenal)
+compare(csvACS, sasACS, allowAll=T)
+summary(compare(csvACS, sasACS, allowAll=T))
+
+
+keep <- c("SERIALNO",  "DIVISION", "PUMA",  "REGION", "ST", "ADJUST", "WGTP")
+#sas <- sasACS[keep]
+csv <- csvACS[keep]
+
+summary(sas)
+summary(csv)
+
+library(xlsx)
+write.xlsx(csvACS, "acs/xlsACS.xlsx")
+
+library(readxl)
+xlsACS2 <- read_excel("acs/xlsACS.xlsx", col_names=T, sheet="Sheet1", range="B1:F15")
+xlsACS2
+names(xlsACS2)
+str(xlsACS2)
+typeof(xlsACS2)
+
+compare(sas, csv, allowAll=T, by= "SERIALNO")
+str(sas)
+str(csv)
+
+summary(compare(sas, csv, allowAll=T))
+
+#https://stackoverflow.com/questions/3171426/compare-two-data-frames-to-find-the-rows-in-data-frame-1-that-are-not-present-in
+library(sqldf)
+a1NotIna2 <- sqldf('SELECT * FROM sas EXCEPT SELECT * FROM csv')
+a1Ina2 <- sqldf('SELECT * FROM sasACS INTERSECT SELECT * FROM csvACS')
+
+library(dplyr) 
+anti_join(sas,csv)
+semi_join(sas,csv)
+
+attributes(sas$SERIALNO)
+attributes(csv$SERIALNO)
+
+summary(sas$SERIALNO)
+summary(csv$SERIALNO)
+
+sum(sasACS$SERIALNO)
+sum(csvACS$SERIALNO)
+
+rr <- as.numeric(as.character(sasACS$SERIALNO))
+rr
+sum(rr)
+attributes(rr)
+view(rr)
+a1NotIna2 <- sqldf('SELECT * FROM rr INTERSECT SELECT * FROM csvACS')
+
+
+
+str(sasACS$SERIALNO)
+str(csvACS$SERIALNO)
+setdiff(sasACS,csvACS)
+
+
+sasACS <- sasACS
+
+table1<-data.frame(id=c(1:5), animal=c("cat", "dog", "parakeet", "lion", "duck"))
+table2<-table1[c(1,3,5),]
+anti_join(table1, table2, by="id")
 
 ##########################################################################################
 # End of rm_EXPLORE/0-MISC/code/rm_enter and analyze.R
