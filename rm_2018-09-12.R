@@ -146,36 +146,28 @@ mycarsxlsx3
 	#add a third data set
 	write.xlsx(mycarsxlsx3, file="multiple.xlsx", sheetName="three", append=TRUE)
 
-###3. read large data set:
+###3. read csv data set:
 #ftp://ftp.ncdc.noaa.gov/pub/data/swdi/database-csv/v2/
-StormData <-  read.csv("//fda.gov/WODC/CTP_Sandbox/OS/DPHS/StatisticsBranch/Team 2/Montes de Oca/rm_EXPLORE/0-Misc/data/repdata_data_StormData.csv", header=T, sep=",")
-
+###3. read data set ftp://ftp.ncdc.noaa.gov/pub/data/swdi/stormevents/csvfiles/legacy/
+StormData <-  read.csv("//fda.gov/WODC/CTP_Sandbox/OS/DPHS/StatisticsBranch/Team 2/Montes de Oca/rm_EXPLORE/0-Misc/data/stormdata_2013.csv", header=T, sep=",")
 summary(StormData)
 head(StormData)
 nrow(StormData); ncol(StormData)
 length(StormData)
 str(StormData) #structure
-ls()
+names(StormData)
 
-summary(StormData$STATE__)   #num
-summary(StormData$BGN_DATE)  #Factor
-summary(StormData$COUNTY)    #num
-summary(StormData$COUNTYENDN) #logi
-summary(StormData$F)          #int
-
-#4. work with dates:
-#https://www.stat.berkeley.edu/~s133/dates.html
-
-summary(StormData$BGN_DATE)  #date time
-bgn_date <- as.Date(StormData$BGN_DATE, format='%m/%d/%Y')
-mean(bgn_date)
-max(bgn_date)
-min(bgn_date)
-summary(bgn_date) #can now calculate min, max...
+#work with dates:
+summary(StormData$BEGIN_DATE_TIME)  #date time
+my_date <- as.Date(StormData$BEGIN_DATE_TIME, format='%m/%d/%Y')
+mean(my_date)
+max(my_date)
+min(my_date)
+summary(my_date) #can now calculate min, max...
 
 #add bgn_date as a new column:
-StormData$bgn_date <- bgn_date
-str(StormData) #added!
+StormData$my_date <- my_date
+names(StormData) #added!
 
 #5. box plots:
 boxplot(bgn_date~StormData$STATE__) #whaaat?
