@@ -103,7 +103,7 @@ Lweight <- fitness$Lweight
 h<-hist(Lweight, breaks=10, col="red", xlab="xlab", main="main")
 xfit<-seq(min(Lweight),max(Lweight),length=40)
 yfit<-dnorm(xfit,mean=mean(Lweight),sd=sd(Lweight))
-yfit <- yfit*diff(h$mids[1:2])*length(Lweight)
+yfit <- yfit*diff(h$mids[1:2])*length(Lweight)  #diff: differences between all consecutive values of a vector; mids: the n cell midpoints.
 lines(xfit, yfit, col="blue", lwd=2)
 
 weight <- fitness$weight
@@ -221,10 +221,21 @@ curve(sin, to = 2*pi)
 #curve(x, to = 2*pi) 
 
 #works with matrices:
+#https://www.statmethods.net/graphs/density.html
+
 m <- matrix(data=cbind(rnorm(30, 0), rnorm(30, 2), rnorm(30, 5)), nrow=30, ncol=3)
 m
 str(m)
 plot(m[,1], m[,2])
+min(m[,1]); max(m[,1])
+
+h<-hist(m[,1], freq = T, xlab="x", xlim=c(-3.00, 3.00), breaks=5, main = "normal")
+xfit<-seq(min(m[,1]),max(m[,1]),length=40)
+yfit<-dnorm(xfit,mean=mean(m[,1]),sd=sd(m[,1]))
+yfit <- yfit*diff(h$mids[1:2])*length(m[,1])
+lines(xfit, yfit, col="blue", lwd=2)
+
+hist(m[,1], freq = T, xlab="x", xlim=c(-3.00, 3.00), breaks=5, main = "normal")
 colnames(m) <- c("m0", "m2", "m5")
 m
 mean(m[,1])
