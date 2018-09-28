@@ -6,9 +6,12 @@
 #starting date: september 2018
 ###########################################################################
 
-#setwd("//fda.gov/WODC/CTP_Sandbox/OS/DPHS/StatisticsBranch/Team 2/Montes de Oca/rm_EXPLORE/0-Misc/data/")
-setwd("rm_EXPLORE/0-Misc/data/")
+setwd("//fda.gov/WODC/CTP_Sandbox/OS/DPHS/StatisticsBranch/Team 2/Montes de Oca/rm_EXPLORE/0-Misc/data/")
+#setwd("rm_EXPLORE/0-Misc/data/")
 getwd()
+
+dev.copy(pdf,"//fda.gov/WODC/CTP_Sandbox/OS/DPHS/StatisticsBranch/Team 2/Montes de Oca/rm_EXPLORE/0-MISC/code/results/rm_noaaB.pdf")
+
 
 library(Hmisc)
 library(psych)
@@ -109,9 +112,10 @@ xsqdata <- data.frame(xsq$observed, xsq$expected)
 head(xsqdata, 10)
 
 rcorr(as.matrix(StormData1))
-plot(fitness[,1:4])
+plot(StormData1[,1:2])
 
 
+dev.off()
 
 ##########################################################################################
 # End of rm_noaa.R
