@@ -93,131 +93,23 @@ boxplot(StormData$monthN~StormData$floodN, xlab="xlab", ylab="ylab")
 boxplot(StormData$monthN~StormData$floodN, subset=StormData$floodN %in% c(1,2), xlab="xlab", ylab="ylab") 
 
 #chi square
-chisq <- chisq.test(StormData$monthN~StormData$floodN)
-chisq
-chisq.test(StormData1, simulate.p.value = TRUE)
+##https://www.rdocumentation.org/packages/stats/versions/3.5.1/topics/chisq.test
+keep=c("floodN", "monthN")
 
+StormData1 <- StormData[keep]
+xsq <- chisq.test(StormData1)
+xsq
 
+xsq$observed   # observed counts (same as M)
+xsq$expected   # expected counts under the null
+xsq$residuals  # Pearson residuals
+xsq$stdres     # standardized residuals
 
+xsqdata <- data.frame(xsq$observed, xsq$expected)
+head(xsqdata, 10)
 
-
-
-#Time series
-data(airpass, package="faraway")
-str(airpass)
-
-plot (pass~year, data=airpass, type="l", ylab="Passengers") #l is lines
-?plot
-
-plot(sin, -pi, 2*pi) 
-x <- seq(0,8*pi,length.out=100)
-x
-y <- sin(x)
-plot(x,y,type="l")
-
-#If y is a function of x, you can use curve if you like: 
-curve(sin, to = 2*pi) 
-#curve(x, to = 2*pi) 
-
-#create new data using a function RxR->R
-col <- function(x,y) {airpass[,x]+y}
-col(1, 100)
-col(2, 2)
-
-airpass2 <- data.frame(col(1,100), col(2,1))
-names(airpass2) <- c("pass", "year")
-str(airpass2)
-
-
-
-
-
-
-
-
-
-
-
-rcorr(as.matrix(StormData))
+rcorr(as.matrix(StormData1))
 plot(fitness[,1:4])
-
-#https://www.r-bloggers.com/correlation-and-linear-regression/
-m1<-lm(weight~age, data=fitness)
-summary(m1)
-plot(m1)
-
-par(mfrow=c(2,2))
-plot(m1)
-
-
-#transform data
-fitness$Lweight<-log(fitness$weight)
-plot(Lweight~age,fitness)
-plot(weight~age,fitness)
-hist(fitness$weight)
-hist(fitness$Lweight)
-
-#add normal curve:
-Lweight <- fitness$Lweight
-h<-hist(Lweight, breaks=10, col="red", xlab="xlab", main="main")
-xfit<-seq(min(Lweight),max(Lweight),length=40)
-yfit<-dnorm(xfit,mean=mean(Lweight),sd=sd(Lweight))
-yfit <- yfit*diff(h$mids[1:2])*length(Lweight)
-lines(xfit, yfit, col="blue", lwd=2)
-
-weight <- fitness$weight
-h<-hist(weight, breaks=10, col="red", xlab="xlab", main="main")
-xfit<-seq(min(weight),max(weight),length=40)
-yfit<-dnorm(xfit,mean=mean(weight),sd=sd(weight))
-yfit <- yfit*diff(h$mids[1:2])*length(weight)
-lines(xfit, yfit, col="blue", lwd=2)
-
-
-
-
-
-
-library(aplpack)
-stem.leaf(precip, depth=F)
-summary(precip)
-s <- sort(precip)
-s
-
-#quartiles 1.statistics wiki p29
-p29 <- c(1,3,5,8,9,12,24,25,28,30,41,50)
-p29
-
-#The function "summary" is based on a definition of quantiles that is biased 
-#to equate the min to the 0%-quantile and max to the 100%-quantile. "The 
-#algorithm linearly interpolates between order statistics of x, assuming 
-#that the ith order statistic is the (i-1)/(length(x)-1) quantile:"
-
-summary(p29)
-quantile(p29, c(0.25, 0.5, 0.75), type=1)
-quantile(p29, c(0.25, 0.5, 0.75), type=2)
-quantile(p29, c(0.25, 0.5, 0.75), type=3)
-?quantile
-
-fivenum(p29)
-
-
-
-
-
-
-
-
-library(arsenal)
-compare(csvACS, sasACS, allowAll=T)
-summary(compare(csvACS, sasACS, allowAll=T))
-
-
-keep <- c("SERIALNO",  "DIVISION", "PUMA",  "REGION", "ST", "ADJUST", "WGTP")
-#sas <- sasACS[keep]
-csv <- csvACS[keep]
-
-summary(sas)
-summary(csv)
 
 
 
