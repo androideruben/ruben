@@ -10,7 +10,8 @@ setwd("//fda.gov/WODC/CTP_Sandbox/OS/DPHS/StatisticsBranch/Team 2/Montes de Oca/
 #setwd("rm_EXPLORE/0-Misc/data/")
 getwd()
 
-dev.copy(pdf,"//fda.gov/WODC/CTP_Sandbox/OS/DPHS/StatisticsBranch/Team 2/Montes de Oca/rm_EXPLORE/0-MISC/code/results/rm_noaaB.pdf")
+#dev.copy(pdf,"//fda.gov/WODC/CTP_Sandbox/OS/DPHS/StatisticsBranch/Team 2/Montes de Oca/rm_EXPLORE/0-Misc/data/rm_noaaB.pdf")
+sink("//fda.gov/WODC/CTP_Sandbox/OS/DPHS/StatisticsBranch/Team 2/Montes de Oca/rm_EXPLORE/0-Misc/data/rm_noaaB.txt")
 
 
 library(Hmisc)
@@ -115,7 +116,8 @@ rcorr(as.matrix(StormData1))
 plot(StormData1[,1:2])
 
 
-dev.off()
+#dev.off()
+sink()
 
 ##########################################################################################
 # End of rm_noaa.R
