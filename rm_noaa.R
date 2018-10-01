@@ -115,11 +115,63 @@ head(xsqdata, 10)
 rcorr(as.matrix(StormData1))
 plot(StormData1[,1:2])
 
-
 #dev.off()
 sink()
 
 ##########################################################################################
 # End of rm_noaa.R
 ##########################################################################################
+
+
+curve(dchisq(x, df = 3), from = 0, to = 20, ylab = "y")
+ind <- c(4, 5, 10, 15)
+for (i in ind) curve(dchisq(x, df = i), 0, 20, add = TRUE)
+
+
+##columns of exercising, scores of heavy, never, ocassional, regular smoking:
+freq <- c(7, 87, 12, 9)
+none <- c(1, 18, 3, 1) 
+some <- c(3, 84, 4, 7)
+
+data1 <- data.frame(freq, none, some)
+
+# products of margins give expected: 
+a=11*115/236
+b=189*115/236
+c=19*115/236
+d=17*115/236
+
+e=11*23/236
+f=189*23/236
+g=19*23/236
+h=17*23/236
+
+i=11*98/236
+j=189*98/236
+k=19*98/236
+l=17*98/236
+
+x2= sum( (a-7)^2/ a, (b-87)^2 / b, (c-12)^2/ c, (d-9)^2 /d, 
+				 (e-1)^2 /e , (f-18)^2 /f , (g-3)^2 /g , (h-1)^2 /h ,
+				 (i-3)^2 /i , (j-84)^2 /j , (k-4)^2 /k , (l-7)^2 /l )
+x2
+
+#All cumulative probability functions in R compute left tail probabilities by default
+pchisq(x2, 6, lower.tail=F)
+1-pchisq(x2, 6, lower.tail=T)
+qchisq(0.95, 6)
+
+xdata1 <- chisq.test(data1)
+xdata1
+
+curve(dchisq(x, df = 6), from = 0, to = 20, ylab = "y")
+
+
+library(HH)
+ old.omd <- par(omd=c(0.05, 0.88, 0.05, 1.00))
+ chisq.setup(df=6)
+ chisq.curve(df=6, col='blue')
+ chisq.observed(5.48, df=6)
+ par(old.omd)
+
 
