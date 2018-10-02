@@ -150,6 +150,23 @@ some <- c(3, 84, 4, 7)
 ###---------------------------------------------------------
 ###             115         23            98          | 236
 
+
+###               Exercises No exercise Some Exercise |
+###Heavy smoking 0.029      0.004       0.012         | 0.046
+###No smoking    0.368      0.076       0.355         | 0.800
+###Occasional    0.050      0.012       0.016         | 0.080
+###Regular       0.038      0.004       0.029         | 0.072
+###---------------------------------------------------------
+###              0.487         0.097    0.415         | 1.00
+
+percent.cells <- function(x) {x/236}
+
+#p(Heavy smoking|Exercises)=p(Heavy smoking & Exercises)/p(Exercises) and compare to p(Heavy smoking)=0.046:
+percent.cells(7)/percent.cells(115)
+
+#p(Heavy smoking|No exercise)=p(Heavy smoking & No exercises)/p(No exercises) and compare to p(Heavy smoking)=0.046:
+percent.cells(1)/percent.cells(23)
+
 data1 <- data.frame(freq, none, some)
 names(data1) <- c("Exercises", "No exercise", "Some Exercise")
 data1
@@ -191,6 +208,8 @@ x <- c(5.360169, 92.09746, 9.258475, 8.283898, 1.072034, 18.41949, 1.851695, 1.6
 hist(x, freq=F, main='main', breaks=seq(-10,100, by=10), ylim=c(0,0.1))	
 curve( dchisq(x, df=6),   col='red',   add=T, xlim= c(-10, 100))
 curve( dchisq(x, df=10), col='green', add=T, xlim= c(-10, 100))
+
+#conditional and independence:
 
 
 ##########################################################################################
