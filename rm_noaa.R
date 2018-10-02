@@ -6,7 +6,7 @@
 #starting date: september 2018
 ###########################################################################
 
-setwd("//fda.gov/WODC/CTP_Sandbox/OS/DPHS/StatisticsBranch/Team 2/Montes de Oca/rm_EXPLORE/0-Misc/data/")
+#setwd("//fda.gov/WODC/CTP_Sandbox/OS/DPHS/StatisticsBranch/Team 2/Montes de Oca/rm_EXPLORE/0-Misc/data/")
 #setwd("rm_EXPLORE/0-Misc/data/")
 getwd()
 
@@ -112,9 +112,10 @@ CrossTable(StormData$monthN, StormData$stateN, expected=F, prop.chisq=F)
 hist(StormData$monthN,breaks=40,col="blue", xlab="floodN", xlim = c(-2, 12), main="floodN2", freq=F)
 boxplot(StormData$monthN~StormData$stateNL, xlab="xlab", ylab="ylab") 
 
-
-#chi square
+#5. chi square test of independence
+##(Ho: variables random and independent, small p-value rejects Ho)
 ##https://www.rdocumentation.org/packages/stats/versions/3.5.1/topics/chisq.test
+
 keep=c("floodN1", "stateN")
 
 StormData1 <- StormData[keep]
@@ -133,7 +134,7 @@ head(xsqdata, 10)
 rcorr(as.matrix(StormData1))
 plot(StormData1[,1:2])
 
-#5. chi square test of independence
+#6. example chi square test of independence
 #(Ho: variables random and independent, small p-value rejects Ho)
 
 ##columns of exercising, and 4 scores of smoking: heavy, never, ocassional, regular
@@ -174,8 +175,6 @@ l=17*98/236
 
 a; b; c; d; e; f; g; h; i; j; k; l;
 
-
-
 x2= sum( (a-7)^2/ a, (b-87)^2 / b, (c-12)^2/ c, (d-9)^2 /d, 
 				 (e-1)^2 /e , (f-18)^2 /f , (g-3)^2 /g , (h-1)^2 /h ,
 				 (i-3)^2 /i , (j-84)^2 /j , (k-4)^2 /k , (l-7)^2 /l )
@@ -187,9 +186,12 @@ pchisq(0x2, 6, lower.tail=F) #density
 qchisq(0.95, 6) #quantile
 
 #plots
-x <- c(5.360169, 92.09746, 9.258475, 8.283898, 1.072034 ,18.41949 ,1.851695 ,1.65678 ,4.567797 ,78.48305 ,7.889831 ,7.059322)
-hist(x, prob=TRUE)	
-curve( dchisq(x, df=6), col='blue', add=F, xlim= c(-10, 100), ylab='y')
+x <- c(5.360169, 92.09746, 9.258475, 8.283898, 1.072034, 18.41949, 1.851695, 1.65678, 4.567797, 78.48305, 7.889831, 7.059322)
+
+hist(x, freq=F, main='main', breaks=seq(-10,100, by=10), ylim=c(0,0.1))	
+curve( dchisq(x, df=6),   col='red',   add=T, xlim= c(-10, 100))
+curve( dchisq(x, df=10), col='green', add=T, xlim= c(-10, 100))
+
 
 ##########################################################################################
 # End of rm_noaa.R
