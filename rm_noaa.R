@@ -2,7 +2,7 @@
 #program: rm_noaa.R
 #purpose: practice noaa data 
 
-#programmer: ruben montes de oca
+#programmer: ruben m
 #starting date: september 2018
 ###########################################################################
 
@@ -112,8 +112,8 @@ CrossTable(StormData$monthN, StormData$stateN, expected=F, prop.chisq=F)
 hist(StormData$monthN,breaks=40,col="blue", xlab="floodN", xlim = c(-2, 12), main="floodN2", freq=F)
 boxplot(StormData$monthN~StormData$stateNL, xlab="xlab", ylab="ylab") 
 
-#5. chi square test of independence
-##(Ho: variables random and independent, small p-value rejects Ho)
+#5. chi square test of independence (see explanations in #6. below before doing this section #5)
+##(Variables are random, Ho: row and column are independent, see p-values: if small p-value then rejects Ho)
 ##https://www.rdocumentation.org/packages/stats/versions/3.5.1/topics/chisq.test
 
 keep=c("floodN1", "stateN")
@@ -135,12 +135,20 @@ rcorr(as.matrix(StormData1))
 plot(StormData1[,1:2])
 
 #6. example chi square test of independence
-#(Ho: variables random and independent, small p-value rejects Ho)
+#(Variables A, B are random, Ho: A, B are independent, see p-values: if small p-value then rejects Ho)
 
-##columns of exercising, and 4 scores of smoking: heavy, never, ocassional, regular
+##Random variable A is columns of exercising,
+###Random variable B is rows of smoking
+###We will find out if A and B are independent statistically
+
 freq <- c(7, 87, 12, 9) #7 are heavy smokers, 87 never, 12 ocassional, 9 regular
 none <- c(1, 18, 3, 1) 
 some <- c(3, 84, 4, 7)
+
+#table created by me, rm:
+rm.table <- data.frame(freq, none, some)
+names(rm.table) <- c("Exercises", "No exercise", "Some Exercise") #label columns
+rm.table
 
 ###               Exercises No exercise Some Exercise |
 ###Heavy smoking  7           1             3         |  11
@@ -150,33 +158,30 @@ some <- c(3, 84, 4, 7)
 ###---------------------------------------------------------
 ###             115         23            98          | 236
 
+#Examples of probabilities for the contingency table: 
 
-###               Exercises No exercise Some Exercise |
-###Heavy smoking 0.029      0.004       0.012         | 0.046
-###No smoking    0.368      0.076       0.355         | 0.800
-###Occasional    0.050      0.012       0.016         | 0.080
-###Regular       0.038      0.004       0.029         | 0.072
-###---------------------------------------------------------
-###              0.487         0.097    0.415         | 1.00
+#a. Probability that a random person is Heavy SMoking: 11/236= 0.046
 
-percent.cells <- function(x) {x/236}
+#b. Probability that a random person is Heavy SMoking and Exercises: 7/236
 
-#p(Heavy smoking|Exercises)=p(Heavy smoking & Exercises)/p(Exercises) and compare to p(Heavy smoking)=0.046:
-percent.cells(7)/percent.cells(115)
+#c. Select a Heavy SMoking, what will be the probability that Exercises 
+##(same as: among Heavy SMoking, probability of Exercises) or
+##(same as: given that I selected a Heavy Smoker, what is the probbaility 
+##that Exercises): P(Exercises| Heavy SMoking)= 7/11
+##
+##alternative and very useful way using conditional probability (use this formula): 
+##
+##		P(Exercises| Heavy SMoking)= P(Exercises & Heavy SMoking)/ P(Heavy Smoking) 
+##
+##the right side gives  (7/236)/ (11/236)= 7/11, then P(Exercises| Heavy SMoking)=7/11
 
-#p(Heavy smoking|No exercise)=p(Heavy smoking & No exercises)/p(No exercises) and compare to p(Heavy smoking)=0.046:
-percent.cells(1)/percent.cells(23)
+##By hand (as if you did it with pen and paper):  products of margins/total give expected for each cell
 
-data1 <- data.frame(freq, none, some)
-names(data1) <- c("Exercises", "No exercise", "Some Exercise")
-data1
+##Expected value of cell 2,1 (the one where 87 is) is row with 189 intersects column with 115 
+###divided by total: 189*115/236 which is 92.09746
 
-xdata1 <- chisq.test(data1)
-xdata1 #X-squared = 5.4885, df = 6, p-value = 0.4828 (exercise is not associated to smoking.)
-
-##By hand:  products of margins give expected: 
-a=11*115/236
-b=189*115/236
+a=11*115/236  
+b=189*115/236 
 c=19*115/236
 d=17*115/236
 
@@ -190,27 +195,31 @@ j=189*98/236
 k=19*98/236
 l=17*98/236
 
-a; b; c; d; e; f; g; h; i; j; k; l;
+a; b; c; d; e; f; g; h; i; j; k; l; #expected values for each of the cells
 
-x2= sum( (a-7)^2/ a, (b-87)^2 / b, (c-12)^2/ c, (d-9)^2 /d, 
+#statistic is sum of all (expected - observed)^2/ total. 
+##Statistic is distributed as chi-square with (rows-1)*(columns-1)=6 degrees od freedom (df):
+rm.by.hand= sum( (a-7)^2/ a, (b-87)^2 / b, (c-12)^2/ c, (d-9)^2 /d, 
 				 (e-1)^2 /e , (f-18)^2 /f , (g-3)^2 /g , (h-1)^2 /h ,
 				 (i-3)^2 /i , (j-84)^2 /j , (k-4)^2 /k , (l-7)^2 /l )
-x2
+
+rm.by.hand #compare to the x-squared calculated by R below:
+
+#calculated by R:
+R.table <- chisq.test(rm.table)
+R.table #X-squared = 5.4885, df = 6, p-value = 0.4828 (exercise is not associated to smoking.)
 
 #All cumulative probability functions in R compute left tail probabilities by default
-pchisq(0x2, 6, lower.tail=F) #density
-1-pchisq(x2, 6, lower.tail=T)
+pchisq(5.4885, 6, lower.tail=F) #density
+1-pchisq(5.4885, 6, lower.tail=T)
 qchisq(0.95, 6) #quantile
 
-#plots
+#plots (x is the values a to l, and will check that its distribution is approximately chi-square):
 x <- c(5.360169, 92.09746, 9.258475, 8.283898, 1.072034, 18.41949, 1.851695, 1.65678, 4.567797, 78.48305, 7.889831, 7.059322)
 
 hist(x, freq=F, main='main', breaks=seq(-10,100, by=10), ylim=c(0,0.1))	
 curve( dchisq(x, df=6),   col='red',   add=T, xlim= c(-10, 100))
 curve( dchisq(x, df=10), col='green', add=T, xlim= c(-10, 100))
-
-#conditional and independence:
-
 
 ##########################################################################################
 # End of rm_noaa.R
