@@ -135,6 +135,7 @@ rcorr(as.matrix(StormData1))
 plot(StormData1[,1:2])
 
 #6. example chi square test of independence
+#References: Wikibook
 #(Variables A, B are random, Ho: A, B are independent, see p-values: if small p-value then rejects Ho)
 
 ##Random variable A is columns of exercising,
@@ -175,7 +176,11 @@ rm.table
 ##
 ##the right side gives  (7/236)/ (11/236)= 7/11, then P(Exercises| Heavy SMoking)=7/11
 
-##By hand (as if you did it with pen and paper):  products of margins/total give expected for each cell
+
+##We will construct a test statistic using the formula: sum of all (expected - observed)^2/ total
+##where observed are the N in the table, and expected are theoretical N.
+
+##Expected by hand (as if you did it with pen and paper): products of margins/total give expected for each cell
 
 ##Expected value of cell 2,1 (the one where 87 is) is row with 189 intersects column with 115 
 ###divided by total: 189*115/236 which is 92.09746
