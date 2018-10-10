@@ -1,0 +1,384 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\documentclass[letterpaper,11pt]{article}
+
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{bm}         
+\usepackage{amsthm}
+\usepackage{afterpage}
+\usepackage[table, usenames, dvipsnames]{xcolor} %added by CDE
+\usepackage{latexsym}
+\usepackage[framemethod=0,ntheorem]{mdframed}
+\usepackage{multirow}
+\usepackage{fullpage}
+\usepackage{setspace}
+\usepackage{multirow}
+\usepackage{rotating}
+\usepackage{pdflscape}
+\usepackage{fancyhdr}
+\usepackage[utf8]{inputenc}
+\usepackage{lscape}
+\usepackage{color}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{longtable}
+\usepackage[english]{babel}
+\usepackage{csquotes}
+\usepackage[font=small,labelfont=bf,skip=0pt]{caption}
+\captionsetup[table]{skip=0.2pt}
+\captionsetup[table]{aboveskip=0pt}
+\captionsetup[table]{belowskip=-15pt}
+
+\usepackage{subcaption}
+
+\captionsetup[subtable]{skip=2pt}
+
+\usepackage[tableposition=top]{caption}
+\usepackage[toc,page]{appendix}
+\usepackage{amsfonts}
+
+\setcounter{MaxMatrixCols}{30}
+\providecommand{\U}[1]{\protect\rule{.1in}{.1in}}
+
+\newcommand{\tablefont}{\fontsize{3mm}{3mm}\selectfont}
+\MakeOuterQuote{"}
+
+\newcommand{\MC}{\multicolumn}
+\newcommand{\MR}{\multirow}
+
+\headheight 15pt
+\headsep 2em
+
+\renewcommand{\footrulewidth}{0pt}
+\newtheorem{remark}{Remark}
+\newtheorem{comment}{\textbf{Comment}}
+\newtheorem{definition}{Definition}
+\newtheorem{discussion}{Discussion:}
+\newtheorem{claim}{Claim}
+\newtheorem{question}{Question}
+\newtheorem{answer}{Answer}
+\newcolumntype{T}{>{\tiny}l}
+\newcolumntype{M}{>{\centering\arraybackslash}m{3.1cm}}
+
+\usepackage{fancyhdr}
+\fancyhf{}
+\pagestyle{fancy} %added by CDE to allow headers, footers to work
+%\rhead{Share\LaTeX}
+%\lhead{Guides and tutorials}
+
+
+\usepackage[pdftex]{hyperref}   
+\hypersetup{colorlinks, citecolor=Violet, linkcolor=Mahogany, urlcolor=blue}
+
+\rfoot{Page \thepage}
+\lfoot{DRAFT-DELIBERATIVE-CONFIDENTIAL}  
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\vspace{-25pt}%
+\begin{tabular}[t]{lp{1in}l}
+	\multirow{5}{*}{\includegraphics[width = 2in]{fdalogo.png}} &  & U.S. Department of Health and Human Services\\
+																								&  & Food and Drug Administration \\
+																								&  & Center for Tobacco Products \\
+																								&  & Office of Sciences \\
+																								&  & Division of Population Health Science \\
+																								&  & Statistics Branch \\
+\end{tabular}
+
+\newline\vspace{15pt} \newline{\Large \textsc{Applied Regression Analysis}}\newline\vspace{0.015in}
+
+\begin{tabular}[h!]{p{2in} p{10in}}
+	\rule{0pt}{4ex}\textbf{Reporting to:}          & Antonio Paredes, MA, MS  \\
+																							   & Lead Mathematical Statistician \\
+																							   & Division of Population Health Science \\
+                                                 & Statistics Branch \\
+																							   & \\
+	\rule{0pt}{4ex}\textbf{Subject:}               & Applied Regression \\
+	\rule{0pt}{4ex}\textbf{Date:}                  & \today \\
+	\rule{0pt}{4ex}\textbf{Statistical Reviewer:}  & Ruben Montes de Oca, MS \\
+																							   & Mathematical Statistician \\
+																							   & Division of Population Health Science \\
+                                                 & Statistics Branch \\
+																							   & \\
+	\rule{0pt}{4ex}\textbf{Branch Chief:}          & George Rochester, PhD \\
+																							   & Chief, Statistics Branch \\
+																							   & Division of Population Health Science \\
+                                                 & Statistics Branch \\
+                                                 & \\
+	\rule{0pt}{4ex}\textbf{Key Words:}  					 & Regression \\
+ \mbox{$\quad$} \\
+ \mbox{$\quad$} \\
+\end{tabular}
+
+\newpage
+\noindent 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%\begin{enumerate}
+%\item
+	%Null: $H_{0}: \beta_{9} \leq$ 0
+%\item
+	%Alternative: $\beta_{9} >$ 0
+%\end{enumerate}
+
+
+%\begin{eqnarray*}\label{eq:eqn4}
+%E\left(Y_{ij} \mid Arm = 1, Timej= 1, \right) - E\left(Y_{ij} \mid Arm = 0, Timej= 1 \right) = \beta_{1} + \beta_{b_{j}}
+%\end{eqnarray}
+
+%$Y_{i}$ $\sim N(X_{i} \beta, Z_{i} D_{u} Z_{i}^{'} + R)$
+
+%$Y_{i}= X_{i} \beta + Z_{i} u_{i} + \epsilon_{i}$ 
+
+%\begin{equation}
+%    ARM=
+%    \begin{cases}
+%      1, & \text{RNC}\\
+%      0, & \text{UNC}
+%    \end{cases}
+%  \end{equation}
+
+%page 2: %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section*{REVIEW OF SIMPLE REGRESSION}
+
+\section{LINEAR MODELS IN ONE VARIABLE}
+
+	We will work on the simplest linear model:
+
+	\begin{equation} 
+	\begin{gathered}
+	$Y_{i}= \beta_{0} + \beta_{1} X_{i}  + \epsilon_{i}$ 
+	\end{gathered}
+	\end{equation}
+
+	\noindent 
+	A straight line where the i indicates the observation units $Y_{i}$ with i=1, 2, ..., n, the $X_{i}$ are n observations of known 	
+	constants, $\beta_{0}$ is the intercept, $\beta_{1}$ the slope and the $\epsilon_{i} \sim \mathcal{N}(0,\sigma^{2})$ independent 
+	pairwise.  
+\\ \\
+	The observations of the dependent variable $Y_{i}$ are assumed to be random observations from the population of random variables with the 
+	mean of each population given by E($Y_{i}$), the expected value of $Y_{i}$.
+
+\section{LEAST SQUARES ESTIMATION}
+
+	The two parameters $\beta_{0}$ and $\beta_{1}$ are estimated from the data and we will use least squares estimation; for the least square 
+	estimation, we calculate the sum of the squared distances between a theoretical line and the observed points ($X_{i}, 
+	Y_{i}$) in a plane. If we modify this theoretical line with intercept $\beta_{0}$ and slope $\beta_{1}$ we will have different sum of 
+	squares. For all of these theoretical lines, we can find values for $\beta_{0}$ and $\beta_{1}$ that minimize the sum of squares, and 
+	then, these $\beta$ estimates $\hat{\beta_{0}}$ and $\hat{\beta_{1}}$ are known as the least squares estimation.  
+	
+	The \textbf{Normal Equations} are:
+
+	\begin{equation}
+	\sum{Y_{i}}= n(\hat{\beta_{0}}) + (\sum{X_{i}) \hat{\beta_{1}}
+	\end{equation}
+
+	\begin{equation}
+	\sum{X_{i} Y_{i}}= (\sum{X_{i}) \hat{\beta_{0}} + (\sum{X_{i}^2) \hat{\beta_{1}}
+	\end{equation}
+
+	the solution of these normal equations are the estimates of $\beta_{0}$ and $\beta_{1}$ obtained by least squares:
+	
+	\begin{equation}
+	\hat{\beta_{1}}= \sum x_{i} y_{i} - \frac {\sum x_{i} y_{i}}  {\sum x_{i}^2 - ((1/n)*\sum x_{i})^2}
+	\end{equation}
+
+	\begin{equation}
+	\hat{\beta_{0}}= \overline{Y} - \hat{\beta_{1}} \overline{X}
+	\end{equation}
+	
+
+	Then, using these estimates our regression equation, also known as fitted regression line is:
+
+	\begin{equation}
+	\hat{Y{i}}= \hat{\beta_{0}} + \hat{\beta_{1}} X_{i}
+	\end{equation}
+	
+\section{PREDICTED VALUES AND RESIDUALS}
+
+	Each quantity computed from the fitted regression line $\hat{Y_{i}}$ is the estimate of the population mean of Y for a particular value of 
+	X, and is also a prediction of the value of Y one might obtain on some future observation at the level of X, and the residuals 
+	
+	\begin{equation}
+	e_{i}= Y_{i} - \hat{Y_{i}}
+	\end{equation}
+	
+	\begin{equation}
+	SS(Res)= \sum(e_{i})^2
+	\end{equation}
+	
+	measure the discrepancy between the data and the fitted model.
+	
+\section{ANALYSIS OF VARIATION IN THE DEPENDENT VARIABLE}
+
+	The residuals defined in equation (7) can be written also in this way:
+	
+	\begin{equation}	
+	\begin{gathered}
+	$Y_{i}= \hat{Y_{i}} + e_{i}$
+	\end{gathered}	
+	\end{equation}
+		
+	Then $\sum (Y_{i}^2)= \sum (\hat{Y_{i}}+ e_{i})^2= \sum (\hat{Y_{i}}^2) + \sum (e_{i})^2= SS(Model)+ SS(Res)$
+	\\ \\
+	(the term $\sum (\hat{Y_{i}} e_{i}$) is zero, see chapter 3, or derive with respect $\beta_{0}$, which is equal to zero because of 
+	critical point for finding the minimum.)
+	\\ \\
+	The term SS(Model) is the sum of squares accounted for by the model and SS(Res) is the unaccounted part, and the SS($Total_{uncorr}$)=
+	SS(Model)- SS(Res) is the uncorrected total sum of squares.
+	\\ \\
+	The more convenient formulas for computation are:
+	
+	\begin{equation}	
+	SS(Model)= n \overline{Y}^2 + \hat{\beta_{1}}^2 \sum(X_{i} - \overline{X})^2
+	\end{equation}
+		
+	\begin{equation}		
+	SS(Res)= SS(Total_{uncorr})- SS(Model)
+	\end{equation}	
+	
+	There are also the corrected sum of squares:
+	\\ \\
+	SS($Total_{corrected})= SS(Total_{uncorr}) - n \overline{Y}^2= ( SS(Model)- n \overline{Y}^2) + SS(Res)$ 
+	
+	\\ \\
+	or using equations (10):
+	\\ \\
+	
+		\begin{equation}
+		\sum{y_{i}^2}= \hat{\beta_{1}} \sum (X_{i}- \overline{X})^2 + \sum{e_{i}} = SS(Reg) + SS(Res)
+		\end{equation}
+	
+	\\ \\
+	Notice that the lower case y is the deviation of Y from $\overline{Y}$ so that the $\sum y_{i}^2$ is the corrected sum of squares.
+	
+	One measure of contribution of the independent variable or variables in the model is the coefficient of determination, denoted by R^2:
+
+	\begin{equation}	
+	\begin{gathered}
+	R^2= SS(Reg)/ \sum(y_{i})
+	\end{gathered}
+	\end{equation}
+	
+	This is the proportion of the (corrected) sum of squares of Y attributable to the information obtained from the independent variable or 
+	variables. The interpretation is the proportion of variation in the dependent variable 
+	explained by its linear relationship with the independent variable. It is a number between 0 and 1, and the closer to 1 the greater this 
+	variation is explained. 
+
+\section{TESTS OF SIGNIFICANCE AND CONFIDENCE INTERVALS}
+	The most common hypothesis in simple linear regression is $H_{0}: \beta_{1}$= m, where m is any constant of interest.
+	The alternative hypothesis is $H_{a}: \beta_{1} \neq m$, or $H_{a}: \beta_{1} \geq m$, or $H_{a}: \beta_{1} < m$.
+	
+	Since the errors $\epsilon_{i}$ are normally distributed, the $\hat{\beta_{1}}$ is normally distributed with mean $\beta_{1}$ and variance 
+	Var($\hat{\beta_{1}}$).
+	\\ \\
+	Then 
+	\\ \\
+	\begin{equation}	
+	\begin{gathered}
+	t=\frac{ \hat{\beta_{1}} - m } { s(\hat{\beta_{1}}) }
+	\end{gathered}
+	\end{equation}			
+	\\ \\
+	Is distributed as a Student's t with degrees of freedom as determined by the estimation of $\sigma^2$.
+	\\ \\
+	In similar manner, t-test of hypothesis about $\beta_{0}$ and any of the $\hat {Y_{i}}$ can be constructed. In each case, the denominator 
+	is the standard deviation of the estimate:
+	
+	\begin{equation}
+	Var(\hat{\beta_{1}}) = s^2 / \sum x_{i}^2
+	\end{equation}		
+	
+	\begin{equation}
+	Var(\hat{\beta_{0}}) = s^2 ( (1/n) + \overline{X}^2 / \sum{x_{i}^2)
+	\end{equation}			
+	
+	The MS(Regr) is an estimate of $\sigma^2+ \beta_{1} \sum x_{i}^2$ and that MS(Res) is an estimate of $\sigma^2$, thus, they are two 	
+	independent $\chi^2$ distributions with one and two degrees of freedom. If the null hypothesis $\beta_{1}$=0 is true, both MS(Regr) and MS(
+	Res) are estimating $\sigma^2$, 
+	therefore, the ratio: 
+	
+	\begin{equation}
+	F=MS(Regr) / MS(Res)
+	\end{equation}	
+	
+	F is F(1,n-2), an F distribution with 1 and n-2 degrees of freedom and can be used as an alternative to the t-test for two tailed 
+	hypotheses about the regression coefficients. 
+	\\ \\
+	
+	The confidence interval estimates of parameters are more informative than point estimates because they reflect the precision of the estimates. The 95\% confidence interval estimate of $\beta_{1}$ and $\beta_{0}$ are respectively:
+	
+	\begin{equation}
+	\hat{\beta_{1}} \pm t_{(0.025, \nu)} s (\hat{\beta_{1}})
+	\end{equation}		
+	
+	and
+	
+	\begin{equation}
+	\hat{\beta_{0}} \pm t_{(0.025, \nu)} s (\hat{\beta_{0}})
+	\end{equation}		
+		
+			where $\nu$ is the degrees of freedom associated with s^2.
+			
+\section{VIOLATION OF ASSUMPTIONS}
+
+	\begin{itemize}
+		\item The Normality assumption is needed for tests of significance and construction of the confidence intervals
+		\item If Cov($e_{i}, e_{j}) \neq$ 0 for a pair of i, j, the errors are not independent and the least square estimators continue to be 		
+					unbiased but are no longer the best estimators
+		\item The effect of non-constant (heterogeneous) variance will violate the derivation of the estimators of the variances of $\hat{\beta_{
+					0}}$ and $\hat{\beta_{1}}$.	
+	\end{itemize}
+
+
+\section{EXAMPLE: Dat1}
+	
+	The data Dat1 has two columns: one is the out column as a numeric variable tht we will use as our dependent variable and a column 
+	exp, a variable with two categories that we recoded as numeric variable in $exp_n$, this variable will be our independent variable 
+	measured without errors.
+	
+	A summary of the these two variables is this \textbf{Table 1}:
+	
+		\begin{figure}[htbp]
+		\centering
+			\includegraphics[scale=1.5]{SAS}
+	\end{figure}
+	
+\newpage
+	
+	Our purpose is to use the summary and formulas from the book and derive estimates for model (1), that is, we will calculate $\beta_{0}, 		
+	\beta_{1}$, sum of squares, variances and t-tests for the $\beta$ coefficients, and the adjusted R^2:
+	\\ \\
+	Compare these results $\textbf{Calculations by Hand}$ vs. estimates using $\textbf{lm}$ in R:
+
+	\begin{figure}[htbp]
+		\centering
+			\includegraphics[scale=1.5]{RA}
+	\end{figure}
+	
+	\begin{figure}[htbp]
+		\centering
+			\includegraphics[scale=1.5]{RB}
+	\end{figure}
+	
+	\begin{figure}[htbp]
+		\centering
+			\includegraphics[scale=1.5]{RC}
+	\end{figure}
+		
+	\begin{figure}[htbp]
+		\centering
+			\includegraphics[scale=1.5]{RD}
+	\end{figure}
+			
+\newpage
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\end{document} 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

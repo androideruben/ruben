@@ -1,0 +1,432 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\documentclass[letterpaper,11pt]{article}
+
+\usepackage{float}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{bm}         
+\usepackage{amsthm}
+\usepackage{afterpage}
+\usepackage[table, usenames, dvipsnames]{xcolor} %added by CDE
+\usepackage{latexsym}
+\usepackage[framemethod=0,ntheorem]{mdframed}
+\usepackage{multirow}
+\usepackage{fullpage}
+\usepackage{setspace}
+\usepackage{multirow}
+\usepackage{rotating}
+\usepackage{pdflscape}
+\usepackage{fancyhdr}
+\usepackage[utf8]{inputenc}
+\usepackage{lscape}
+\usepackage{color}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{longtable}
+\usepackage[english]{babel}
+\usepackage{csquotes}
+\usepackage[font=small,labelfont=bf,skip=0pt]{caption}
+\captionsetup[table]{skip=0.2pt}
+\captionsetup[table]{aboveskip=0pt}
+\captionsetup[table]{belowskip=-15pt}
+
+\usepackage{subcaption}
+
+\captionsetup[subtable]{skip=2pt}
+
+\usepackage[tableposition=top]{caption}
+\usepackage[toc,page]{appendix}
+\usepackage{amsfonts}
+
+\setcounter{MaxMatrixCols}{30}
+\providecommand{\U}[1]{\protect\rule{.1in}{.1in}}
+
+\newcommand{\tablefont}{\fontsize{3mm}{3mm}\selectfont}
+\MakeOuterQuote{"}
+
+\newcommand{\MC}{\multicolumn}
+\newcommand{\MR}{\multirow}
+
+\headheight 15pt
+\headsep 2em
+
+\renewcommand{\footrulewidth}{0pt}
+\newtheorem{remark}{Remark}
+\newtheorem{comment}{\textbf{Comment}}
+\newtheorem{definition}{Definition}
+\newtheorem{discussion}{Discussion:}
+\newtheorem{claim}{Claim}
+\newtheorem{question}{Question}
+\newtheorem{answer}{Answer}
+\newcolumntype{T}{>{\tiny}l}
+\newcolumntype{M}{>{\centering\arraybackslash}m{3.1cm}}
+
+\usepackage{fancyhdr}
+\fancyhf{}
+\pagestyle{fancy} %added by CDE to allow headers, footers to work
+%\rhead{Share\LaTeX}
+%\lhead{Guides and tutorials}
+
+
+\usepackage[pdftex]{hyperref}   
+\hypersetup{colorlinks, citecolor=Violet, linkcolor=Mahogany, urlcolor=blue}
+
+\rfoot{Page \thepage}
+\lfoot{DRAFT-DELIBERATIVE-CONFIDENTIAL}  
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\vspace{-25pt}%
+\begin{tabular}[t]{lp{1in}l}
+	\multirow{5}{*}{\includegraphics[width = 2in]{fdalogo.png}} &  & U.S. Department of Health and Human Services\\
+																								&  & Food and Drug Administration \\
+																								&  & Center for Tobacco Products \\
+																								&  & Office of Sciences \\
+																								&  & Division of Population Health Science \\
+																								&  & Statistics Branch \\
+\end{tabular}
+
+\newline\vspace{15pt} \newline{\Large \textsc{Applied Regression Analysis}}\newline\vspace{0.015in}
+
+\begin{tabular}[h!]{p{2in} p{10in}}
+	\rule{0pt}{4ex}\textbf{Reporting to:}          & Antonio Paredes, MA, MS  \\
+																							   & Lead Mathematical Statistician \\
+																							   & Division of Population Health Science \\
+                                                 & Statistics Branch \\
+																							   & \\
+	\rule{0pt}{4ex}\textbf{Subject:}               & Applied Regression \\
+	\rule{0pt}{4ex}\textbf{Date:}                  & \today \\
+	\rule{0pt}{4ex}\textbf{Statistical Reviewer:}  & Ruben Montes de Oca, MS \\
+																							   & Mathematical Statistician \\
+																							   & Division of Population Health Science \\
+                                                 & Statistics Branch \\
+																							   & \\
+	\rule{0pt}{4ex}\textbf{Branch Chief:}          & George Rochester, PhD \\
+																							   & Chief, Statistics Branch \\
+																							   & Division of Population Health Science \\
+                                                 & Statistics Branch \\
+                                                 & \\
+	\rule{0pt}{4ex}\textbf{Key Words:}  					 & Regression \\
+ \mbox{$\quad$} \\
+ \mbox{$\quad$} \\
+\end{tabular}
+
+\newpage
+\noindent 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%page 2: %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section*{CHAPTER 3: MULTIPLE REGRESSIONS WITH MATRICE}
+
+\section{THE MODEL}
+
+We will work on this linear model with p independent variables X_{i1}, X_{i2}, X_{ip}:
+
+	\begin{equation} 
+	\begin{gathered}
+	$Y_{i}= \beta_{0} + \beta_{1} X_{i1}  + \beta_{2} X_{i2} + \ldots + \beta_{p} X_{ip}  + \epsilon_{i}$ 
+	\end{gathered}
+	\end{equation}
+
+\noindent 
+In this model we have observation units $Y_{i}$ with i=1, 2, $\ldots$, n, p independent variables X_{i1}, X_{i2}, X_{ip} and p'=p+1 
+parameters $\beta_{0}, \beta_{1},..., \beta_{p}$. We assume that n $>$ p'.
+We can express this model using matrices as follows:
+	
+	\begin{equation} 
+	\begin{gathered}
+	\pmb{Y= X \beta + \epsilon} 
+	\end{gathered}
+	\end{equation}	
+	
+where:
+\\ \\
+	
+	\pmb{Y}: the n $\times$ 1 column vector of observations $Y_{i}$:
+	
+	\[\pmb{Y}=
+	\begin{bmatrix}
+	Y_{1}		\\
+	Y_{2}		\\
+	\vdots 	\\
+	Y_{n}		\\
+	\end{bmatrix}
+	\]
+\\ \\
+	
+	\pmb{X}: the n $\times$ p' matrix of a column of ones and p columns of the independent variables
+\\ \\
+
+	\[\pmb{X}=
+	\begin{bmatrix}
+	1 			& X_{11} & X_{12} & \ldots & X_{1p}	\\
+	1 			& X_{21} & X_{22} & \ldots & X_{2p}	\\
+	\vdots 	& \vdots & \vdots & \vdots & \vdots \\
+	1 			& X_{n1} & X_{n2} & \ldots & X_{np}	\\
+	\end{bmatrix}
+	\]
+\\ \\
+	
+	\pmb{$\beta$}: the p' $\times$ 1 vectors of parameters to be estimated
+	\\ \\
+	\[\pmb{\beta}=
+	\begin{bmatrix}
+	\beta_{0} \\
+	\beta_{1} \\
+	\vdots 	\\
+	\beta_{n} \\
+	\end{bmatrix}
+	\]
+\\ \\	
+	
+	\pmb{$\epsilon$}: the n $\times$ 1 vectors of parameters to be estimated
+
+	\[\pmb{\epsilon}=
+	\begin{bmatrix}
+	\epsilon_{1} \\
+	\epsilon_{2} \\
+	\vdots 	\\
+	\epsilon_{n} \\
+	\end{bmatrix}
+	\]
+We assume that the matrix X is a full rank matrix, that is, the columns of X are linearly independent and the model is called full rank.
+The non-full rank models will be covered on Chapter 9.
+Each column of X contains the values for a particular independent variable and multiplying the first row of X by $\beta$, and adding the first element of $\epsilon$ confirms that the model for the first observation is:
+
+	\begin{equation} 
+	\begin{gathered}
+	$Y_{i}= \beta_{0} + \beta_{1} X_{11}  + \beta_{2} X_{12} + \ldots + \beta_{p} X_{1p}  + \epsilon_{1}$ 
+	\end{gathered}
+	\end{equation}
+
+It is common to assume that $\epsilon_{i}$ are independent and identically distributed as normal random variables with mean zero and variance $\sigma^2$. Since $\epsilon_{i}$ are assumed to be independent of each other, the covariance between $\epsilon_{i}$ and $\epsilon_{j}$ is zero for any i $\neq$ j. The joint probability density function of $\epsilon_{1}, \epsilon_{2}, . . . , \epsilon_{n}$ is
+
+	\begin{gathered}
+	\begin{equation}
+	\prod_{i=1}^{n} [(2 \pi) ^{-1/2} \sigma ^{-1} exp(-\epsilon_{i} ^2/2 {\sigma} ^2)] = (2 \pi) ^{-n/2} \sigma ^{-n} exp(- \sum_{i=1} ^{n} 	
+	\epsilon_{i}^2/2 \sigma^2)
+	\end{gathered}
+	\end{equation}
+	
+Following our assumptions of \epsilon and that the X and \beta are fixed constants:
+	
+	\begin{itemize}
+	\item Yi is a normal random variable with mean $\beta_{0}+\beta_{1} X_{i1}+\beta_{2} X_{i2}+\ldots+ \beta_{p} X_{ip}$ and variance $\sigma 
+	^{2}$
+	\item The $Y_{i}, Y_{j}$ are independent of each other for any i $\neq$ j
+	\end{itemize}
+	
+\section{NORMAL EQUATIONS, $\hat{Y}$ AND RESIDUALS VECTORS}
+
+In matrix notation, the normal equations are written as:
+\\ \\
+
+X' X $\hat{\beta}}$ = X' Y
+\\ \\
+
+The normal equations are always consistent and hence will always have a solution of the form
+$\hat{\beta} = (X' X)^{-} X' Y$, where $A^{-}=(X' X)^{-}$ is a generalized inverse matrix, that is, a matrix that satisfies A $A^{-}$ A= A
+If X' X has an inverse, then the normal equations have a unique solution given by $\hat{\beta} = (X' X) ^{-1} (X' Y)$
+
+\\ \\
+The vector of estimated means of the dependent variable Y for the values $\hat{Y}$ is computed as
+$\hat{Y} = X \hat{\beta}$.
+The residuals vector e reflects the lack of agreement between the observed Y and the estimated $\hat{Y}$:
+e = Y - $\hat{Y}$.
+
+\section{PROPERTIES OF LINEAR FUNCTIONS OF RANDOM VECTORS}
+
+Note that $\hat{\beta}, \hat{Y}$ and e are random vectors because they are functions of the random vector Y.
+
+If Z=$(z_{1} \ldots z_{n})'$ is a random vector $n \times 1$ the mean of Z is an n $\times$ 1 vector with i-th coordinate 
+$E(z_{i})$.
+The variance-covariance matrix $V_{Z}$=Var(Z) for Z is defined as an n $\times$ n symmetric matrix with the diagonal
+elements equal to the variances of the random variables and the (i, j)th off-diagonal element equal to the covariance 
+between $z_{i}$ and $z_{j}$:
+\\ \\
+
+	\[V_{Z}=
+	\begin{bmatrix}
+	Cov(z_{1}, z_{1}) & Cov(z_{1}, z_{2}) & \ldots Cov(z_{1}, z_{n-1}) & Cov(z_{1}, z_{n})\\
+	Cov(z_{2}, z_{1}) & Cov(z_{2}, z_{2}) & \ldots Cov(z_{2}, z_{n-1}) & Cov(z_{2}, z_{n})\\
+	\vdots 						& \vdots 						& \ldots \vdots 						 & \vdots						\\
+	Cov(z_{n}, z_{1}) & Cov(z_{n}, z_{2}) & \ldots Cov(z_{n}, z_{n-1}) & Cov(z_{n}, z_{n})\\
+	\end{bmatrix}
+	\]
+\\ \\
+
+We will develop the multivariate normal distribution and present some properties of multivariate normal random vectors.
+Suppose $z_{1}, z_{2}, \ldots z_{n}$ are independent normal random variables with mean zero and variance $\sigma^{2}$
+Then, the random vector Z=($z{1}, z_{2}, \ldots z_{n}$) has a multivariate normal distribution with mean 0=(0, \ldots 0)'
+and variance-covariance matrix $V_{z} = I \sigma^{2}$, which is denoted as Z $\sim \mathcal{N}(0,I \sigma^{2})$
+The probability density function of Z is given in equation () and can also be expressed as
+
+	\begin{gathered}
+	\begin{equation}
+	(2 \pi) ^{-n/2} |I \sigma ^{2}|^{-1} exp(Z' (I \sigma ^{2})^{-1} Z/2)
+	\end{gathered}
+	\end{equation}
+
+It is a general result that if $\pmb{U}$ is a function $\pmb{U=A Z+ b}$ with A a k $\times$ n matrix of constants and $\pmb{b}$ a k $\times$ 1 vector of constants, then $\pmb{U} \sim \mathcal{N}(\mu_{U}, V_{U})$ and the probability density function of U is:
+\\ \\
+
+	\begin{gathered}
+	\begin{equation}
+	(2 \pi) ^{-k/2} |V_{U}| ^{-1/2} exp ^{(-1/2) ( [U- \mu_{U}]' V_{U} ^{-1} [U- \mu_{U}] )
+	\end{gathered}
+	\end{equation}
+
+
+Using matrices, we can derive the expectation and variance of a sample mean. Suppose $Y_{1}, Y_{2}, \ldots , Y_{n}$ are independent random variables with mean $\mu$ and variance $\sigma^{2}$. Then, for Y = ($Y_{1}, Y_{2}, \ldots , Y_{n}$)'
+
+E(Y)= ($\mu, \ldots , \mu$)' and Var(Y)= I $\sigma ^{2}$
+
+\section{PROPERTIES OF REGRESSION ESTIMATES}
+
+
+Recall that in $Y = X \beta + \epsilon$, we assumed that the $\epsilon$ are independent and identically distributed (iid) as 
+$\sim \mathcal{N}(0,I \sigma^{2})$. Since $\beta$ is a constant, 
+
+	\begin{gathered}
+	\begin{equation}
+	Y \sim \mathcal{N}( x \beta, \sigma^{2} I)
+	\end{gathered}
+	\end{equation}
+
+and the joint probability density function of Y is:
+
+	\begin{gathered}
+	\begin{equation}
+	(2 \pi) ^{-n/2} |I \sigma^{2}| ^{-1/2} exp ^{(-1/2) ( [Y- X \beta]' (I \sigma^{2})^-{1} (T- X \beta)
+	\end{gathered}
+	\end{equation}
+
+Since $\hat{\beta}$=$[(X' X)^{-1} X'] E(Y)$, then the estimates of the regression coefficients are linear functions of the dependent variable Y.
+So, if the model $Y = X \beta + \epsilon$ is correct, the expected value of Y is X $\beta$ and the expected value of $\hat{\beta}$ is:
+
+E($\hat{\beta}$)= $[(X'X)^{-1} X] E(Y)$ = $[(X'X)^{-1} X']X \beta= [(X'X)^{-1} X'X] \beta= \beta$.
+
+This shows that $\hat{\beta}$ is an unbiased estimator of $\beta$ for the assumed model $Y = X \beta + \epsilon$.
+Continuing with this model, $Var(\hat{\beta})=(X X')^{-1} X X' (X' X)^{-1} \sigma^{2}= (X X')^{-1} \sigma^{2}$
+and we arrived to $\hat{\beta} \sim \mathcal{N}(\beta, (X X')^{-1} \sigma^{2})$
+
+Recall that the residuals are e= Y - P Y, where $P= [X (X' X)^{-1} X']$, then E(e)= (1-P) E(Y)= $(I-P) X \beta$ = $(X- PX) \beta= (X' - X) \beta$=0. Thus the residuals are a random variable with mean a zero vector $n \times 1$.
+The variance-covariance matrix of the residual vector e is:
+Var(e)= (I - P) $\sigma^{2}$, again, suing that (I-P) is an idempotent symmetric matrix. If the vector $\epsilon$ is normally distributed, then e $\sim \mathcal{N}(0, (I-P) \sigma^{2})$
+
+
+\section{EXERCISES}
+
+1. The dat1.xlsx has 768 observations. We will use bmi as our Y variable glucose, diastolic, triceps, insulin, diabetes, age, exposure, and sex as our X variables to fit a linear regression model model $Y_{i} = X_{i} \beta + \epsilon_{i}$, for i=1, 2, \ldots, 768 using matrix algebra. The formulas used are in figures created by R knit.
+\\ \\
+
+	\begin{itemize}
+	\item Figure 1: summary of the data 
+
+	\item Figure 2: first rows of the 768 $\times$ 9 design matrix X, and of the observed vector 768 $\times$ 1 vector Y
+
+	\item Figure 3: estimates $\hat{\beta}$ of $\beta$ and formulas used for these estimates
+	
+	\item Figure 4: Variance-covariance matrix and stderr
+
+	\item Figure 5: t-test for $\hat{\beta_{0}}$ to $\hat{\beta_{8}}$ and p-values
+
+	\item Figure 6: Sum of Squares, Mean Squares, and F sttaistics with p-value
+
+	\item Figure 7: R Square, Adjusted R Square, and CV
+
+	\item Figure 8: Results using lm, compare to figures 1 to 7
+	
+	\item Figure 9: Excercise 3.2.A. det[(X'X)^{-1} X'] $\neq$ 0 thus the Normal Equations have a unique solution  
+
+	\item Figure 10: Excercise 3.2.B. det[(X'X)^{-1} X'] $\neq$ 0 thus the Normal Equations have a unique solution  
+
+	\item Figure 11: Excercise 3.2.C. $det[(X'X)^{-1} X']$ = 0 thus the Normal Equations do not have a unique solution  
+	
+	\item Figure 12: Excercise 3.4 Find n and $\sum{X_{i}}$ for the matrix X
+	\end{itemize}
+		
+	\begin{figure}[h!]
+	\centering
+	\includegraphics[scale=1.5]{fig1}
+	\caption{Summary of dat1}
+	\end{figure}
+	
+
+
+	\begin{figure}[h!]
+	\centering
+	\includegraphics[scale=1.5]{fig2}
+	\caption{X and Y matrices (first rows only)}
+	\end{figure}
+		
+		
+	\begin{figure}[h!]
+	\centering
+	\includegraphics[scale=1.0]{fig3}
+	\caption{ $\hat{\beta}$ and residuals}
+	\end{figure}
+
+	\begin{figure}[h!]
+	\centering
+	\includegraphics[scale=1.5]{fig4}
+	\caption{Variance-covariance matrix and stderr}
+	\end{figure}
+				
+	\begin{figure}[h!]
+	\centering
+	\includegraphics[scale=1.0]{fig5}
+	\caption{t-test for $\hat{\beta_{0}}$ to $\hat{\beta_{8}}$ and p-values}
+	\end{figure}
+					
+	\begin{figure}[h!]
+	\centering
+	\includegraphics[scale=1.0]{fig6}
+	\caption{Sum of Squares, Mean Squares, and F sttaistics with p-value}
+	\end{figure}
+						
+	\begin{figure}[h!]
+	\centering
+	\includegraphics[scale=1.5]{fig7}
+	\caption{R Square, Adjusted R Square, and CV}
+	\end{figure}						
+
+	\begin{figure}[h!]
+	\centering
+	\includegraphics[scale=1.5]{fig8}
+	\caption{Results using lm}
+	\end{figure}
+				
+	\begin{figure}[h!]
+	\centering
+	\includegraphics[scale=1.5]{fig32a}
+	\caption{Problem 3.2 A}
+	\end{figure}
+			
+	\begin{figure}[h!]
+	\centering
+	\includegraphics[scale=1.5]{fig32b}
+	\caption{Problem 3.2 B}
+	\end{figure}			
+			
+	\begin{figure}[h!]
+	\centering
+	\includegraphics[scale=1.5]{fig32c}
+	\caption{Problem 3.2 C}
+	\end{figure}
+				
+	\begin{figure}[h!]
+	\centering
+	\includegraphics[scale=1.5]{fig34}
+	\caption{Problem 3.4}
+	\end{figure}	
+					
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\end{document} 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

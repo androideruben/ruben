@@ -1,0 +1,560 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\documentclass[letterpaper,11pt]{article}
+
+\usepackage{float}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{bm}         
+\usepackage{amsthm}
+\usepackage{afterpage}
+\usepackage[table, usenames, dvipsnames]{xcolor} %added by CDE
+\usepackage{latexsym}
+\usepackage[framemethod=0,ntheorem]{mdframed}
+\usepackage{multirow}
+\usepackage{fullpage}
+\usepackage{setspace}
+\usepackage{multirow}
+\usepackage{rotating}
+\usepackage{pdflscape}
+\usepackage{fancyhdr}
+\usepackage[utf8]{inputenc}
+\usepackage{lscape}
+\usepackage{color}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{longtable}
+\usepackage[english]{babel}
+\usepackage{csquotes}
+\usepackage[font=small,labelfont=bf,skip=0pt]{caption}
+\captionsetup[table]{skip=0.2pt}
+\captionsetup[table]{aboveskip=0pt}
+\captionsetup[table]{belowskip=-15pt}
+
+\usepackage{subcaption}
+
+\captionsetup[subtable]{skip=2pt}
+
+\usepackage[tableposition=top]{caption}
+\usepackage[toc,page]{appendix}
+\usepackage{amsfonts}
+
+\setcounter{MaxMatrixCols}{30}
+\providecommand{\U}[1]{\protect\rule{.1in}{.1in}}
+
+\newcommand{\tablefont}{\fontsize{3mm}{3mm}\selectfont}
+\MakeOuterQuote{"}
+
+\newcommand{\MC}{\multicolumn}
+\newcommand{\MR}{\multirow}
+
+\headheight 15pt
+\headsep 2em
+
+\renewcommand{\footrulewidth}{0pt}
+\newtheorem{remark}{Remark}
+\newtheorem{comment}{\textbf{Comment}}
+\newtheorem{definition}{Definition}
+\newtheorem{discussion}{Discussion:}
+\newtheorem{claim}{Claim}
+\newtheorem{question}{Question}
+\newtheorem{answer}{Answer}
+\newcolumntype{T}{>{\tiny}l}
+\newcolumntype{M}{>{\centering\arraybackslash}m{3.1cm}}
+
+\usepackage{fancyhdr}
+\fancyhf{}
+\pagestyle{fancy} %added by CDE to allow headers, footers to work
+%\rhead{Share\LaTeX}
+%\lhead{Guides and tutorials}
+
+
+\usepackage[pdftex]{hyperref}   
+\hypersetup{colorlinks, citecolor=Violet, linkcolor=Mahogany, urlcolor=blue}
+
+\rfoot{Page \thepage}
+\lfoot{DRAFT-DELIBERATIVE-CONFIDENTIAL}  
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\vspace{-25pt}%
+\begin{tabular}[t]{lp{1in}l}
+	\multirow{5}{*}{\includegraphics[width = 2in]{fdalogo.png}} &  & U.S. Department of Health and Human Services\\
+																								&  & Food and Drug Administration \\
+																								&  & Center for Tobacco Products \\
+																								&  & Office of Sciences \\
+																								&  & Division of Population Health Science \\
+																								&  & Statistics Branch \\
+\end{tabular}
+
+\newline\vspace{15pt} \newline{\Large \textsc{Applied Regression Analysis}}\newline\vspace{0.015in}
+
+\begin{tabular}[h!]{p{2in} p{10in}}
+	\rule{0pt}{4ex}\textbf{Reporting to:}          & Antonio Paredes, MA, MS  \\
+																							   & Lead Mathematical Statistician \\
+																							   & Division of Population Health Science \\
+                                                 & Statistics Branch \\
+																							   & \\
+	\rule{0pt}{4ex}\textbf{Subject:}               & Applied Regression \\
+	\rule{0pt}{4ex}\textbf{Date:}                  & \today \\
+	\rule{0pt}{4ex}\textbf{Statistical Reviewer:}  & Ruben Montes de Oca, MS \\
+																							   & Mathematical Statistician \\
+																							   & Division of Population Health Science \\
+                                                 & Statistics Branch \\
+																							   & \\
+	\rule{0pt}{4ex}\textbf{Branch Chief:}          & George Rochester, PhD \\
+																							   & Chief, Statistics Branch \\
+																							   & Division of Population Health Science \\
+                                                 & Statistics Branch \\
+                                                 & \\
+	\rule{0pt}{4ex}\textbf{Key Words:}  					 & Regression \\
+ \mbox{$\quad$} \\
+ \mbox{$\quad$} \\
+\end{tabular}
+
+\newpage
+\noindent 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%page 2: %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section*{CHAPTER 4: ANALYSIS OF VARIANCE AND QUADRATIC FORMS}
+
+\section{Analysis of Variance}
+
+We will develop distributional results for all quadratic functions of Y to tests of hypotheses, construct confidence intervals, and joint 
+confidence regions for $\beta$.
+
+The estimates of the regression coefficients, means, and residuals are linear functions of the original observations Y.
+We will work sums of squares for testing a linear contrast or a collection of linear hypotheses as quadratic forms of Y. 
+
+We will use these facts about quadratic forms:
+
+\begin{enumerate}
+	\item Any sum of squares can be written as YAY , where A is a square symmetric non-negative definite matrix
+	\item The degrees of freedom associated with any quadratic form equal the rank of the defining matrix, which equals its trace
+         when the matrix is idempotent
+	\item Two quadratic forms are orthogonal if the product of their defining matrices is the null matrix
+\end{enumerate}
+
+As an illustration, let Y= $(Y_{1}, Y_{2}, Y_{3}, Y_{4}, Y_{5})$' be the vector of mean disease scores for a fungus disease on alfalfa. The 
+five treatments were five equally spaced day/night temperature regimes under which the plants were growing at the 
+time of inoculation with the fungus. The total uncorrected sum of squares is $Y' Y = Y_{1}^{2}+ Y_{2}^{2}+ Y_{3}^{2}+ Y_{4}^{2}+ Y_{5}^{2}$.
+We can write $\sum{Y_{i}= Y' A$, with A=$I_{5}$ the identity matrix 5 $\times$ 5, then $\sum Y_{i}^2= Y' A A' Y= Y' (A A') Y$, and we expressed the sum of squares using a quadratic form A. Since A is idempotent and tr(I)=5, the sum of squares has 5 degrees of freedom.
+
+
+The vector of observations on the dependent variable Y was partitioned in Chapter 3 into the vector of estimated means of Y $\hat{Y}$ and the residuals vector e: Y=$\hat{Y}$+ e.
+We also noted that Y Y'= $\sum{Y_{i}^2}$ is the SS(Total). This is a quadratic form where the defining matrix is the identity I, that is
+Y' Y= Y' I Y. The I matrix is idempotent and its trace is equal to its order, indicating that the total (uncorrected) sum of squares
+has degrees of freedom equal to the number of elements in the vector. 
+
+Since Y =$\hat{Y}$ + e, using $\textbf{P}$= $[X (X'X)^{-1} X']$:
+\\ \\
+
+Y' Y = $(\hat{Y} + e)'(\hat{Y} + e)$ =$\hat{Y}' \hat{Y} +\hat{Y}' e + e' \hat{Y} + e'e$.
+\\ \\
+Substituting $\hat{Y}$ = PY and e = (I − P)Y gives $Y' Y$ = $(PY)' (PY) + (PY)' [(I - P)Y] + [(I - P)Y]' (PY)+ [(I - P)Y]' [(I - P)Y]$= 
+$Y' P' P Y + Y' P' (I - P) Y + Y' (I - P)' P Y+ Y' (I - P)' (I - P)Y$
+\\ \\
+
+Both P and (I -P) are symmetric and idempotent so that P' P = P and(I - P)' (I - P) = (I - P). The two middle terms P' (I - P), and (I - P)' 
+P are zero since the two quadratic forms are orthogonal to each other:
+P' (I - P) = P - P = 0.
+\\ \\
+Thus,Y' Y = Y' P Y + Y' (I - P) Y = $\hat{Y}'$
+
+The total uncorrected sum of squares has been partitioned into two quadratic forms with defining matrices P and (I − P), respectively. 
+$\hat{Y}' \hat{Y}$ is that part of Y' Y that can be attributed to the model being fit and is labeled SS(Model). The second term e' e is that 
+part of Y' Y not explained by the model. It is the residual sum of squares after fitting the model and is labeled SS(Res). These results are 
+summarized in table 1.
+ 
+The orthogonality of the quadratic forms ensures that SS(Model) and SS(Res) are additive partitions. The degrees of freedom associated with each will depend on the rank of the defining matrices. The rank of $P =[X(X'X)^{-1} X']$ is determined by the rank of X. For full rank models, the rank of X is equal to the number of columns in X, which is also the number of parameters in $\beta$. Thus, the degrees of freedom for SS(Model) is p' when the model is of full rank. The r(P) is also given by tr(P) since P is idempotent. A result from matrix algebra states that tr(AB) = tr(BA). Note the rotation of the matrices in the product. Using this property, with A = X and $B = (X'X)^{-1} X'$ we have tr(P) = tr[X(X'X)^{-1} X'] = tr[(X'X)^{-1} X'X]= tr(Ip')=p'.
+
+For each sum of squares, the corresponding mean square is obtained by dividing the sum of squares by its degrees of freedom.
+
+Usually we want to explain the variation about the mean rather than the variation about zero. When $\mu$ is the only parameter in the model,
+SS($\mu$) is called the correction factor and
+
+SS(Regression)=SS(Model)- SS($\mu$)
+
+Then, Total SS= Y'I Y= SS($\mu$) + SS(Regression)+ SS(Residuals) with SS($\mu$) 1 d.f., SS(Regression) p'-1 d.f., and SS(Residuals) n-p' d.f.
+as in this Analysis of Variance 
+\\ \\
+Table 1:
+
+\bigskip
+
+\begin{tabular}{|c c c c|} 
+
+ \hline
+ Source of Variation 						& Degrees of Freedom 	& Sum of Squares 							& Sum of Squares 													 	\\
+																&  										&  Formula 										& for Computation													 	\\ 
+ \hline\hline
+	$Total_{(uncorrected)}$ 	 		& r(I)=n 							& Y' I Y 											& Y' Y 																		  \\ 
+	Model  		 			   						& r(P)=p' 						& $\hat{Y}'\hat{Y}$=Y' P Y		& $\hat{\beta}' X' Y$												\\ 
+	Residual			 					   		& r(I-P)=(n-p')				& e' e= Y' (I-P) Y						& Y' Y- $\hat{\beta}$' X' Y									\\
+ \hline\hline
+	Mean									 	   		& 1 									& 														& n \overline{Y}^{2} 												\\ 
+	$Total_{(corrected)}$ 	   		& n-1									& 														& Y' I Y - n \overline{Y}^{2} 						  \\ 
+	Regression    		 			   		& p'-1 							  & 														& $\hat{\beta}' X' Y - n \overline{Y}^{2}$	\\ 
+	Residual			 					   		& n-p'				        & 														& Y' Y- $\hat{\beta}$' X' Y									\\
+ \hline
+
+\end{tabular}
+
+Coefficient of Determination: $R^{2}$= $SS_{(Regr)}$/$SS_{(Total_{(corrected})}$ 
+\\
+Adjusted $R^{2}$=$1-[(1-R^{2})(n-1)/(n-p')]$
+\bigskip
+
+
+Key points are:
+\begin{itemize}
+\item  The rank of X is equal to the number of linearly independent columns in X
+\item  The model is a full rank model if the rank of X equals the number of columns of X, (n $>$ p')
+\item  The unique ordinary least squares solution exists only if the model is of full rank
+\item  The defining matrices for the quadratic forms in regression are all idempotent. Examples are I, P, (I − P), and J/n
+\item  The defining matrices J/n, (P − J/n), and (I − P) are pairwise orthogonal to each other and sum to I. Consequently, they partition
+the total uncorrected sum of squares into orthogonal sums of squares
+\item  The degrees of freedom for a quadratic form are determined by the rank of the defining matrix which, when it is idempotent, equals its
+trace. For a full rank model, r(I) = n the only full rank idempotent matrix, r(P) = p', r(J/n) = 1, r(P − J/n) = p, r(I − P) = n − p'.
+\end{itemize}
+
+\section{EXPECTATIONS OF QUADRATIC FORMS}
+
+Each of the quadratic forms computed in the analysis of variance of Y estimates some function of the parameters of the model. The 
+expectations of these quadratic forms are needed to use the sums of squares and their mean squares. The following 
+results are stated without proofs. The reader is referred to Searle (1971) for more complete development.
+Let E(Y) = $\mu$ a general vector of expectations, and let Var(Y) = $V_{y}$ = V $\sigma^{2}$.
+\\ \\
+The general result for the expectation of the quadratic form Y' A Y is $\sigma^{2} tr(A) + \beta' X' A X \beta$, under the ordinary least squares assumption, and:
+\\ \\
+E[SS(Model)] = p' $\sigma^{2}$ + $\beta'$ X' X $\beta$
+\\ \\
+E[SS(Regr)] = p $\sigma^{2}$ + $\beta'$ X' (I - J/n) X $\beta$
+\\ \\
+E[SS(Res)] = (n - p') $\sigma^{2}$
+\\ \\
+E[MS(Regr)] = $\sigma^{2} + [\beta' X' (I - J/n) X \beta]/p$
+\\ \\
+E[MS(Res)] = $\sigma^{2}$
+\\ \\
+Then the residual mean square MS(Res) is an unbiased estimate of $\sigma^{2}$. The regression mean square MS(Regr) is an estimate of $\sigma^
+{2}$ plus a quadratic function of all $\beta_{j}$ except $\beta_{0}$. Comparison of MS(Regr) and MS(Res) provides the basis for 
+assessing the importance of the regression coefficients or the independent variables. Since the second term in E[MS(Regr)] 
+is a quadratic function of $\beta$, which cannot be negative, any contribution from the independent variables to the predictability of $Y_{i
+}$ makes MS(Regr) larger in expectation than MS(Res). The ratio of the observed MS(Regr) to the observed MS(Res) provides the test of 
+significance of the composite hypothesis that all $\beta_{j}$ except $\beta_{0}$, are zero. Tests of significance are discussed more fully 
+in the following sections. The expectations assume that the model used in the analysis of variance is the correct model.
+
+\section{DISTRIBUTION OF QUADRATIC FORMS}
+
+The normality assumption on the $\epsilon_{i}$ will be used for tests of significance. When normality is
+not satisfied, the parametric tests of significance must be regarded as approximations.
+
+If Y is normally distributed, with E(Y) = $\mu$ and Var(Y)=V $\sigma^{2}$, where V is a nonsingular matrix, then
+\begin{itemize}
+\item A quadratic form Y' (A/$\sigma^{2}$)Y is distributed as a noncentral chi-square with df = r(A), and noncentrality 
+parameter $\Omega$ = ($\mu' A \mu) /2 \sigma^{2}$
+
+\item Quadratic forms Y' A Y  and Y' B Y are independent of each other if AV B = 0 (if V = I, the condition reduces
+to AB = 0; that is, A and B are orthogonal to each other); and
+\item A quadratic function Y' A Y is independent of a linear function BY if BV A = 0
+\end{itemize}
+
+The normality assumption on $\epsilon$ implies that the sums of squares divided by $\sigma^{2}$ are chi-square random variables. The chi-
+square distribution and the orthogonality between the quadratic forms provide the basis for the usual tests of significance. For example, 
+when the null hypothesis is true the t-statistic is the ratio of a normal deviate to the square root of a scaled independent central chi-
+square random variable. The F-statistic is the ratio of a scaled noncentral chi-square random variable (central chi-square random variable 
+if the null hypothesis is true) to a scaled independent central chi-square random variable. The scaling in each case is division of the
+chi-square random variable by its degrees of freedom. The noncentrality parameter $\Omega$=($\mu' A \mu)/2 \sigma^{2}$ is important for two 
+reasons: the condition that makes the noncentrality parameter of the numerator of the F-ratio equal to zero is an explicit statement of the 
+null hypothesis and the power of the test to detect a false null hypothesis is determined by the magnitude of the noncentrality parameter. 
+The noncentrality parameter of the chi-square distribution is the second term of the expectations of the quadratic forms divided by 2. SS(Res
+)/ $\sigma^{2}$ is a central chi-square since the second term was zero. The noncentrality parameter for SS(Regr)/$\sigma^{2}$ is
+$\Omega$= ($\beta$' X' (I - J/n) X $\beta$)/ 2 $\sigma^{2}$
+
+which is a quadratic form involving all $\beta_{j}$ except $\beta_{0}$. Thus, SS(Regr)/ $\sigma^{2}$ is a central chi-square only if $\Omega$= 0, which requires (I -J/n)X $\beta$ = 0. Since X is assumed to be of full rank, it can be shown that $\Omega$ = 0 if and only if
+$\beta_{1}, \beta_{2}, ..., \beta_{p}$ = 0. Therefore, the F-ratio using F = MS(Regr)/MS(Res) is a test of the composite hypothesis that all $\beta_{j}$ except $\beta_{0}$ equal zero. This hypothesis is stated as H0 : $\beta$* = 0 and Ha : $\beta$* $\neq$ 0,
+where $\beta$* is the p $\times$ 1 vector of regression coefficients excluding $\beta_{0}$.
+\\ \\
+The key points from this section are summarized as follows.
+\begin{itemize}
+\item The expectations of the quadratic forms are model dependent. If the incorrect model has been used, the expectations are incorrect. This is particularly critical for the MS(Res) since it is used repeatedly as the estimate of $\sigma^{2}$.
+For this reason it is desirable to obtain an estimate of $\sigma^{2}$ that is not model dependent. 
+\item The expectations of the mean squares provide the basis for choosing the appropriate mean squares for tests of hypotheses
+with the F-test; the numerator and denominator mean squares must have the same expectations if the null
+hypothesis is true and the expectation of the numerator mean square must be larger if the alternative hypothesis
+is true.
+\item The assumption of a normal probability distribution for the residuals is necessary for the conventional tests of significance
+and confidence interval estimates of the parameters to be correct. Although tests of significance appear to
+be reasonably robust against nonnormality, they must be regarded as approximations when the normality assumption
+is not satisfied.
+\end{itemize}
+
+\section{THE GENERAL LINEAR HYPOTHESIS}
+
+The ratio of MS(Regr) to MS(Res) provides a test of the null hypothesis that all $\beta_{j}$ except $\beta_{0}$ are simultaneously equal to 
+zero. This section presents a general method of constructing tests for any hypothesis involving linear functions of $\beta$.
+
+The general linear hypothesis is defined as $H_{0}: K' \beta= m$ where K' is a k $\times$ p' matrix of coefficients defining k linear functions of the $\beta_{j}$ to be tested. Each row of K' contains the coefficients for one linear function; m is a k $\times$ 1 vector of constants, frequently zeros. The k linear equations in $H_{0}$ must be linearly independent. Linear independence implies that K' is of full rank, r(K) = k, and ensures that the equations in $H_{0}$ are consistent for every choice of m. The number of linear functions in $H_{0}$ cannot exceed the number of parameters in $\beta$ otherwise, K' would not be of rank k.
+
+Suppose $\beta'$ = ($\beta_{0} \beta_{1} \beta_{2} \beta_{3}$) and you wish to test the composite null hypothesis that 
+$\beta_{1} = \beta_{2}, \beta_{1} + \beta_{2} = 2 \beta_{3}, and \beta_{0}$ = 20 or, equivalently,
+$H_{0} : \beta_{1} - \beta_{2}= 0$
+$\beta_{1} + \beta_{2} − 2 \beta_{3}$ = 0
+$\beta_{0}$ = 20
+
+These three linear functions can be written in the form K' $\beta$= m by
+defining
+
+\bigskip
+
+\[K'=
+\begin{bmatrix}
+	 0 & 1 & -1 & 0\\
+	 0 & 1 & 1 & -2\\
+	 1 & 0 & 0 & 0\\
+\end{bmatrix}
+\]
+
+\bigskip
+
+and
+\[m=
+\begin{bmatrix}
+
+	 0 \\
+	 0 \\
+	 20 \\
+	
+\end{bmatrix}
+\]
+
+The alternative hypothesis is $H_{a}$: K' $\beta$  $\neq$ m.
+\\ \\
+
+The least squares estimate of $K' \beta - m$ is obtained by substituting the least squares estimate $\hat{\beta}$ to obtain K' $\hat{\beta}$ - m. Under the ordinary least squares assumptions, including normality, K' $\hat{\beta} - m$ is normally distributed with mean 
+$E(K' \hat{\beta} - m)$ = $K' \beta - m$, which is zero if the null hypothesis is true, and variance–covariance matrix $Var(K' \hat{\beta} -m)$ = $K' (X' X)^{-1} K \sigma^{2}$ = $V \sigma^{2}$. The variance is obtained by applying the rules for variances of linear functions.
+
+The sum of squares for the linear hypothesis $H_{0} : K' \beta = m$ is computed by:
+Q=($\hat{K'} \hat{\beta}$ -m)' $[K' (X' X)^{-1} K]^{-1}$ (K' $\hat{\beta} -m)$.
+
+This is a quadratic form in K' $\hat{\beta}$ −m with defining matrix
+A = $[K' (X' X)^{-1} K]^{-1}$ = $V^{-1}$
+
+and the expectation of Q is
+\\ \\
+E(Q) = k $\sigma^{2} + (K' \beta -m)' [K' (X' X)^{-1} K]^{-1} (K' \beta −m)$
+
+With the assumption of normality, $Q/ \sigma^{2}$ is distributed as a noncentral chisquare
+random variable with k degrees of freedom.
+
+The appropriate denominator of the F-test is any unbiased and independent estimate of $\sigma^{2}$; 
+usually MS(Res) is used. Thus,
+F = ($s^{-2}$) Q/ r(K) is a proper F-test of $H_{0}$ : $K' \beta −m$ = 0 with numerator degrees of freedom
+equal to r(K) and denominator degrees of freedom equal to the degrees of freedom in $s^{2}$.
+
+
+\section{IMPORTANT FORMULAS}
+
+Table 1:
+
+\bigskip
+
+\begin{tabular}{|c c|} 
+ \hline
+ Model 											& Y=$X \beta + \epsilon$		\\
+ Normal equations   				& (X' X) \beta= X' Y				\\ 
+ Parameter estimates				& $\beta$= $(X' X)^{-1}$ X' Y \\ 
+	Fitted values							& $\hat{Y}$= X $\hat{\beta}$= P Y, where P= $X (X' X)^{-1} X$ \\
+	Residuals									& 1 										& 														& n \overline{Y}^{2} 											  \\ 
+	Variance of $\hat{\beta}$ & n-1									& 														& Y' I Y - n \overline{Y}^{2} 						  \\ 
+	Variance of $\hat{Y}$			& p'-1 							  & 														& $\hat{\beta}' X' Y - n \overline{Y}^{2}$	\\ 
+	Variance of e							& n-p'				          & 														& Y' Y- $\hat{\beta}$' X' Y								  \\
+ \hline
+\end{tabular}
+
+\bigskip
+
+
+
+
+\section{EXERCISES}
+
+4.5. The accompanying table presents data on one dependent variable and five independent variables.
+
+\bigskip
+
+\begin{tabular}{|c c c c c c|} 
+
+ \hline
+	Y 	 & X1 	& X2 	 & X3 	& X4 		 & X5	 \\
+ \hline\hline
+	6.68 & 32.6 & 4.78 & 1092 & 293.09 & 17.1 \\
+	6.31 & 33.4 & 4.62 & 1279 & 252.18 & 14.0 \\
+	7.13 & 33.2 & 3.72 &  511 & 109.31 & 12.7 \\
+	5.81 & 31.2 & 3.29 &  518 & 131.63 & 25.7 \\
+	5.68 & 31.0 & 3.25 &  582 & 124.50 & 24.3 \\
+	7.66 & 31.8 & 7.35 &  509 &  95.19 &  0.3 \\
+	7.30 & 26.4 & 4.92 &  942 & 173.25 & 21.1 \\
+	6.19 & 26.2 & 4.02 &  952 & 172.21 & 26.1 \\
+	7.31 & 26.6 & 5.47 &  792 & 142.34 & 19.8 \\
+ \hline
+
+\end{tabular}
+
+\bigskip
+
+(a) Give the linear model in matrix form for regressing Y on the five independent variables. Completely define each matrix and
+give its order and rank. 
+
+	\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=1.0]{4A}
+	\end{figure}
+
+(b) The following quadratic forms were computed.
+Y'PY = 404.532 
+Y'Y = 405.012
+Y'(I - P)Y = 0.480 
+Y'(I - J/n)Y= 4.078
+Y'(P - J/n)Y= 3.598 
+Y'(J'/n)Y = 400.934.
+
+	\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=1.0]{4B}
+	\end{figure}
+	
+	
+(c) The partial sums of squares for $X_{1}, X_{2}, X_{3}, X_{4}$ and $X_{5}$ are .895, .238, .270, .337, and .922, respectively. 
+Give the R-notation that describes the partial sum of squares for $X_{2}$. Use a matrix algebra program to verify 
+the partial sum of squares for $X_{2}$.
+	
+(d) Assume that none of the partial sums of squares for $X_{2}, X_{3}$, and $X_{4}$ is significant and that the partial sums of squares for
+$X_{1}$ and $X_{5}$ are significant (at $\alpha$ = 0.05). Indicate whether each of the following statements is valid based on these results. 
+If it is not a valid statement, explain why.
+
+$X_{1}$ and $X_{5}$ are important causal variables whereas $X_{2}, X_{3}$, and $X_{4}$ are not (TRUE)
+
+$X_{2}, X_{3}$, and $X_{4}$ can be dropped from the model with no meaningful loss in predictability of Y (FALSE: see below)
+
+	\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=1.0]{4D}
+	\end{figure}
+
+There is no need for all five independent variables to be retained in the model (FALSE.)
+
+\section{A NUMERICAL EXAMPLE (page 122)}
+
+Physical fitness program at N. C. State University, data provided by A. C. Linnerud.
+
+Measurements of age, weight, oxygen uptake (Y), run time (X1), heart rate while resting (X2), heart rate while
+running (X3), and maximum heart rate (X4) while running 1.5 miles were recorded for each subject of the n=31 
+men. The model is Y = $X \beta + \epsilon$, where $\beta$ = $(\beta_{0} \hspace{0.1cm} \beta_{1} \hspace{0.1cm} \beta_{2} \hspace{0.1cm} 
+\beta_{3} \hspace{0.1cm} \beta_{4} \hspace{0.1cm} )$'. The estimated regression equation is $\hat{Y_{i}}$ = 84.26902 - 3.06981 X_{i1} + 0.
+00799 X_{i2}  - 0.11671 X_{i3}  + 0.08518 X_{i4}
+
+The residual mean square s2 = 7.4276 is the estimate of $\sigma^{2}$ and has 26 degrees of freedom.
+
+	\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=1.0]{e1}
+	\end{figure}
+ 
+	\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=1.0]{e1}
+	\end{figure}
+	
+	\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=1.0]{e2}
+	\end{figure}
+	
+	\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=1.0]{e3}
+	\end{figure}
+	
+	\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=1.0]{e4}
+	\end{figure}
+	
+	\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=1.0]{e5}
+	\end{figure}
+	
+	\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=1.0]{e6}
+	\end{figure}
+	
+	\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=1.0]{e7}
+	\end{figure}
+	
+	\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=1.0]{e8}
+	\end{figure}
+	
+	\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=1.0]{e9}
+	\end{figure}
+	
+	\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=1.0]{e10}
+	\end{figure}
+
+	\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=1.0]{e11}
+	\end{figure}
+
+The oxygen uptake model of Example 4.8 has p'=5 parameters and $\nu$=26 degrees of freedom for $\sigma^{2}$. In order to attain 
+an overall confidence coefficient no smaller than $1-\alpha$=0.95 with the Bonferroni method, $\alpha^{*}$=0.05/5=0.01 would be used, 
+for which $t_{(.01/2,26)}$=2.779. Using this value of t in 
+\\
+$\hat{\beta_{j}}$ $\pm$ t_{($\alpha /2 , \nu$)}  s($\hat{\beta_{j}}$), j = 0, . . . , p.
+
+where the standard error of $\hat{\beta_{j}}$ is s($\hat{\beta_{j}}$)=$\sqrt{c_{jj} s^{2}}$ and $s^{2}$ is estimated with $\nu$ degrees of 
+freedom and $c_{jj}$ is the (j+1)th diagonal element from $(X' X)^{-1}$.
+
+Then, the Bonferroni simultaneous confidence intervals with an overall confidence coefficient at least as large 
+as $1-\alpha$=0.95:
+
+\bigskip
+
+\[$CL_{B}(\hat{\beta})$=
+\begin{bmatrix}
+	 52.655 & 115.883\\
+	 −4.235 & −1.904\\
+	 −0.203 & −0.219\\
+	 −0.293 & 0.060\\
+	 −0.123 & 0.293\\
+\end{bmatrix}
+\]
+
+The $100(1−\alpha)\%$ simultaneous confidence intervals for $\beta$ obtained using either Bonferroni or Sheff$\'e$ methods, provide 
+confidence intervals for each individual parameter $\beta_{j}$ in such a way that the p'-dimensional region formed by the intersection of 
+the p'-simultaneous confidence intervals gives at least a $100(1−\alpha)\%$ joint confidence region for all parameters. The shape of this 
+joint confidence region is rectangular or cubic. Sheff$\'e$ also derives an ellipsoidal $100(1−\alpha)\%$ joint confidence region for all 
+parameters that is contained in the boxed region obtained by the Sheff$\'e$ simultaneous confidence intervals. This distinction 
+is illustrated after joint confidence regions are defined in the next section.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\end{document} 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

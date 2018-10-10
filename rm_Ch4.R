@@ -23,7 +23,7 @@ getwd()
 
 Y=matrix(c(6.68, 6.31, 7.13, 5.81, 5.68, 7.66, 7.30, 6.19, 7.31), 
 	nrow=9, ncol=1, byrow=TRUE)
-
+colnames(Y) <- c("Y")
 X=matrix(c( 
 1, 32.6, 4.78, 1092, 293.09, 17.1,
 1, 33.4, 4.62, 1279, 252.18, 14.0,
@@ -35,6 +35,7 @@ X=matrix(c(
 1, 26.2, 4.02,  952, 172.21, 26.1,
 1, 26.6, 5.47,  792, 142.34, 19.8
 ), nrow=9, ncol=6, byrow=TRUE)
+colnames(X) <- c("X0", "X1", "X2", "X3", "X4", "X5")
 
 bh = solve( t(X) %*% X ) %*% t(X) %*% Y
 bh
@@ -149,13 +150,7 @@ bh
 #(iii) There is no need for all five independent variables to be
 #retained in the model (FALSE)
 
-
-
-##################################################################################
-#End of rm_Ch4.R##################################################################
-##################################################################################
-
-
+##Numerical example:
 
 Y=matrix(c( 
 44.609,
@@ -227,16 +222,106 @@ X=matrix(c(
 ), nrow=31, ncol=5, byrow=TRUE)
 colnames(X) <- c("X0", "X1", "X2", "X3", "X4")
 
-#n:
-n=31
+##Use lm for regression analysis:
+XDF<-as.data.frame((X))  #make data as data frame
+summary(lm(Y ~ X0+X1+X2+X3+X4, data=XDF))
+
+##We will reproduce these lm results using matrix algbra
+
+##The book has Yi = 84.26902 - 3.06981 Xi1 + 0.00799 Xi2 - 0.11671 Xi3 + 0.08518 Xi4:
+bh = solve( t(X) %*% X ) %*% t(X) %*% Y
+bh  #bh is multivariate Normal with mean=beta, and var=sigma^2 (X' X)^-1
+
+###We need these: n, J, I, P:
+	n=31
+	J=matrix(1,nrow=31,ncol=31) 
+	sum(diag(J/31)) #trace (J/n)
+	I=diag(31)
+	P=X %*% solve( ( t(X) %*% X ))  %*% t(X) #page 109
+
+##SS Residual:
+SSRes=t(Y) %*% Y - t(bh) %*% t(X) %*% Y
+SSRes
+
+##SS Total uncorrected:
+TotUncorr=t(Y) %*% Y
+
+##SS Total corrected:
+TotCorr=t(Y) %*% Y - n* (mean(Y)* mean(Y))
+TotCorr
+
+TotCorr=(t(Y)%*%Y) - ( t(Y) %*% (J/n) %*% Y )  #Total(uncorr) - SS(mu)
+TotCorr
+
+##SS Model:
+SSModel=t(bh) %*% t(X)  %*% Y
+SSModel
+
+##SS Regr
+SSReg=t(Y) %*% P %*% Y - ( t(Y) %*% (J/n) %*% Y )  #SSReg= SSModel- SS(mu)
+SSReg
+
+SSReg= t(Y) %*% (P - J/n) %*% Y  #Also, SSReg= Y' (P-J/n) Y
+SSReg
+
+
+##Also, SSRes is:
+SSRes=TotCorr- SSReg
+SSRes
+
+##And the estimated variance is:
+sh2=SSRes/ sum(diag(I-P))   #SSRes/n-p' is also s^2
+sh2
+
+##The s.e. is:
+sh=sqrt(sh2)
+sh
+
+##Coefficient of Determination or multiple R^2:
+R2=SSReg/TotCorr
+R2
+
+##Adjusted R^2:
+R2=SSReg/TotCorr
+R2
+
 
 #Full rank model if the rank of X equals its number of columns:
 qr(X)$rank
 
+
+
+
+
+
+
+
+
+
+
+
+SSReg/sum(diag(P-J/n))   #SSReg/n-p', p' is sum(diag(P))
+
+
+
+
+
+
+
+
+
+
+
+
+##SS Regression:
+t(Y) %*% Y - t(bh) %*% t(X) %*% Y
+
+##F:
+(t(Y) %*% Y - t(bh) %*% t(X) %*% Y) / (t(Y) %*% Y - n* (mean(Y)* mean(Y)))
+
+
+
 #Since it is a full rank model, the bh=bhat is unique:
-##The book has Yi = 84.26902 - 3.06981 Xi1 + 0.00799 Xi2 - 0.11671 Xi3 + 0.08518 Xi4:
-bh = solve( t(X) %*% X ) %*% t(X) %*% Y
-bh
 
 #The defining matrices J/n, (P - J/n), and (I - P) are pairwise
 #orthogonal to each other and sum to I. Consequently, they partition
@@ -275,22 +360,23 @@ K=matrix(c(
 ##df is 2:
 qr(t(K))$rank
 
-#Q = (K' ß^ -m)' [K' (X' X)^-1 * K]^-1 * (K' ß^ -m)= 10.0016:
+#Q = (K' _^ -m)' [K' (X' X)^-1 * K]^-1 * (K' _^ -m)= 10.0016:
 Q=t( t(K) %*% bh - m) %*% solve( t(K) %*% ( solve(t(X) %*% X)) %*% K) %*% ( t(K) %*% bh - m)
 Q
 
-#F-test of the null hypothesis is F= s^2 *(Q/2)= 0.673 with 2 and 26 df:
+#F-test of the null hypothesis is F= (Q/2) / s^2 = 0.673 with 2 and 26 df:
 F= (Q/2) / ( ((t(Y) %*% Y) - t(bh) %*% t(X) %*% Y ) / qr(I-P)$rank ) 
 F
 
-##Since F< F_2_26, no reason to reject the null hypothesis that ß2 and ß4 are both zero:
+##The computed F is much smaller than the critical value F(.05,2,26) = 3.37
+##and, therefore, there is no reason to reject the null hypothesis that ß2 and
+##ß4 are both zero:
 qf(0.95, df1=2, df2=26) 
 pf(F, 2, 26)
 
 
 #TABLE 4.4. Summary analysis of variance for the regression of oxygen uptake on
 #run time, heart rate while resting, heart rate while running, and maximum heart rate.
-
 
 ##Source  		df  SS  			MS
 ##Total(corr)	30 	851.3815
@@ -313,17 +399,91 @@ SSRes/ sum(diag(I-P))   #SSRes/n-p' is also s^2
 
 
 
+##The second hypothesis illustrates a case where m = 0. Suppose prior
+###information suggested that the intercept ß0 for a group of men of this
+###age and weight should be 90. Then the null hypothesis of interest is ß0 =
+###90 and, for illustration, we construct a composite hypothesis by adding
+###this constraint to the two conditions in the first null hypothesis. The null
+###hypothesis is now H0: K' ß -m = 0:
+
+#To test H0: beta2=beta4=0=m:
+m=matrix(c( 
+	90,
+	0,
+	0
+), nrow=3, ncol=1, byrow=TRUE)
+
+K=matrix(c( 
+	1, 0, 0,
+	0, 0, 0,
+	0, 1, 0,
+	0, 0, 0,
+	0, 0, 1
+), nrow=5, ncol=3, byrow=TRUE)
+
+#For this hypothesis:
+t(K) %*% bh - m
+
+#and
+
+solve( t(K) %*% solve( t(X) %*% X ) %*% K)
+
+Q = t( t(K) %*% bh -m) %*% solve( t(K) %*% solve( t(X) %*% X ) %*% K) %*% ( t(K) %*% bh -m)
+Q
+
+##and has 3 degrees of freedom. The computed F-statistic is:
+F= (Q/3) / ( ((t(Y) %*% Y) - t(bh) %*% t(X) %*% Y ) / qr(I-P)$rank )
+F
+
+##which, again, is much less than the critical value of F for a = .05 and 3
+###and 26 degrees of freedom, F(.05,3,26) = 2.98. There is no reason to reject
+###the null hypothesis that ß0 = 90 and ß2 = ß4 = 0.
+
+qf(0.95, df1=3, df2=26) 
+pf(F, 3, 26)
+
+##df is 2:
+qr(t(K))$rank
+
+#Q = (K' _^ -m)' [K' (X' X)^-1 * K]^-1 * (K' _^ -m)= 10.0016:
+Q=t( t(K) %*% bh - m) %*% solve( t(K) %*% ( solve(t(X) %*% X)) %*% K) %*% ( t(K) %*% bh - m)
+Q
+
+#F-test of the null hypothesis is F= s^2 *(Q/2)= 0.673 with 2 and 26 df:
+F= (Q/2) / ( ((t(Y) %*% Y) - t(bh) %*% t(X) %*% Y ) / qr(I-P)$rank ) 
+F
+
+##The computed F is much smaller than the critical value F(.05,2,26) = 3.37
+##and, therefore, there is no reason to reject the null hypothesis that ß2 and
+##ß4 are both zero:
+qf(0.95, df1=2, df2=26) 
+pf(F, 2, 26)
+
+
+#TABLE 4.4. Summary analysis of variance for the regression of oxygen uptake on
+#run time, heart rate while resting, heart rate while running, and maximum heart rate.
+
+##Source  		df  SS  			MS
+##Total(corr)	30 	851.3815
+##Regression 	4 	658.2368 	164.5659
+##Residual 		26 	193.1178 	7.4276 = s^2
+
+TotCorr=(t(Y)%*%Y) - ( t(Y) %*% (J/n) %*% Y )  #Total(uncorr) - SS(mu)
+TotCorr
+
+SSReg=t(Y) %*% P %*% Y - ( t(Y) %*% (J/n) %*% Y )  #SSReg= SSModel- SS(mu)
+SSReg
+SSReg= t(Y) %*% (P - J/n) %*% Y  #Also, SSReg= Y' (P-J/n) Y
+SSReg
+
+SSReg/sum(diag(P-J/n))   #SSReg/n-p', p' is sum(diag(P))
+
+SSRes=TotCorr- SSReg
+SSRes/ sum(diag(I-P))   #SSRes/n-p' is also s^2
+
+##################################################################################
+#End of rm_Ch4.R##################################################################
+##################################################################################
 
 
 
-
-
-
-/ sum(diag(P))   #Also SSModel is (t(bh) %*% t(X) %*% Y)
-
-
-#SS mu (sum(Y)*sum(Y)/n):
-t(Y) %*% (J/n) %*% Y
-
-#SS Regression = SS Model - SS mu:
-(t(bh) %*% t(X) %*% Y) - (t(Y) %*% (J/n) %*% Y) / 30
