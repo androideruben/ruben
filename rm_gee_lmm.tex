@@ -1,0 +1,356 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%https://nw360.blogspot.com/2017/03/set-up-pdf-viewer-in-texniccenter.html
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\documentclass[letterpaper,11pt]{article}
+\usepackage{float}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{bm}         
+\usepackage{amsthm}
+\usepackage{afterpage}
+\usepackage[table, usenames, dvipsnames]{xcolor}
+\usepackage{latexsym}
+
+%\usepackage[framemethod=0,ntheorem]{mdframed}
+
+\usepackage{etexcmds}
+\usepackage{fullpage}
+\usepackage{setspace}
+\usepackage{multirow}
+\usepackage{rotating}
+\usepackage{pdflscape}
+\usepackage{fancyhdr}
+\usepackage[utf8]{inputenc}
+\usepackage{lscape}
+\usepackage{color}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{longtable}
+\usepackage[english]{babel}
+\usepackage{csquotes}
+
+\usepackage[font=small,labelfont=bf,skip=0pt]{caption}
+%\captionsetup[table]{skip=0.2pt}
+%\captionsetup[table]{aboveskip=0pt}
+%\captionsetup[table]{belowskip=-15pt}
+
+\usepackage{subcaption}
+
+%\captionsetup[subtable]{skip=2pt}
+
+\usepackage[tableposition=top]{caption}
+\usepackage[toc,page]{appendix}
+\usepackage{amsfonts}
+
+\setcounter{MaxMatrixCols}{30}
+\providecommand{\U}[1]{\protect\rule{.1in}{.1in}}
+
+\newcommand{\tablefont}{\fontsize{3mm}{3mm}\selectfont}
+\MakeOuterQuote{"}
+
+\newcommand{\MC}{\multicolumn}
+\newcommand{\MR}{\multirow}
+
+\headheight 15pt
+\headsep 2em
+
+\renewcommand{\footrulewidth}{0pt}
+\newtheorem{remark}{Remark}
+\newtheorem{comment}{\textbf{Comment}}
+\newtheorem{definition}{Definition}
+\newtheorem{discussion}{Discussion:}
+\newtheorem{claim}{Claim}
+\newtheorem{question}{Question}
+\newtheorem{answer}{Answer}
+\newcolumntype{T}{>{\tiny}l}
+\newcolumntype{M}{>{\centering\arraybackslash}m{3.1cm}}
+
+\usepackage{fancyhdr}
+\fancyhf{}
+\pagestyle{fancy} %added by CDE to allow headers, footers to work
+%\rhead{Share\LaTeX}
+%\lhead{Guides and tutorials}
+
+
+\usepackage[pdftex]{hyperref}   
+\hypersetup{colorlinks, citecolor=Violet, linkcolor=Mahogany, urlcolor=blue}
+
+\rfoot{Page \thepage}
+\lfoot{DRAFT-DELIBERATIVE-CONFIDENTIAL}  
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\vspace{-25pt}%
+
+\begin{tabular}[t]{lp{1in}l}
+ %\multirow{5}{*}{\includegraphics[width = 2in]{fdalogo.png}} && U.S. Department of Health and Human Services\\
+	\multirow{5}{*}{\includegraphics[width = 2in]{fdalogo.png}} && U.S. Department of Health and Human Services \leavevmode  \\
+																								&& Food and Drug Administration \\
+																								&& Center for Tobacco Products \\
+																								&& Office of Sciences \\
+																								&& Division of Population Health Science \\
+																								&& Statistics Branch \\
+\end{tabular}
+
+\typeout{************RUBEN IS HERE DEBBUGING THE LOG}
+
+%\newline \vspace{15pt} \newline {\Large \textsc{Generalized Estimating Equations and Linear Mixed Models}}\newline\vspace{0.015in}
+\leavevmode \newline \vspace{15pt} \newline {\Large \textsc{Generalized Estimating Equations and Linear Mixed Models}}\newline\vspace{0.015in}
+
+\begin{tabular}[h!]{p{2in} p{10in}}
+	\rule{0pt}{4ex}\textbf{Reporting to:}          & Esther Salazar, PhD  \\
+																							   & Lead Mathematical Statistician \\
+																							   & Division of Population Health Science \\
+                                                 & Statistics Branch I\\
+																							   & \\
+	\rule{0pt}{4ex}\textbf{Subject:}               & Statistical Models \\
+	\rule{0pt}{4ex}\textbf{Date:}                  & \today \\
+	\rule{0pt}{4ex}\textbf{Statistical Reviewer:}  & Ruben Montes de Oca, MS \\
+																							   & Mathematical Statistician \\
+																							   & Division of Population Health Science \\
+                                                 & Statistics Branch I\\
+																							   & \\
+	\rule{0pt}{4ex}\textbf{Branch Chief:}          & Ghideon Solomon, PhD \\
+																							   & Chief, Statistics Branch I\\
+																							   & Division of Population Health Science \\
+                                                 & Statistics Branch \\
+                                                 & \\
+	\rule{0pt}{4ex}\textbf{Key Words:}  					 & Individual and population approaches\\
+																								 & Sandwich estimator, REML, Quasi Likelihood \\
+ \mbox{$\quad$} \\
+ \mbox{$\quad$} \\
+\end{tabular}
+
+\newpage
+\noindent 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%page 2: %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\section*{INTRODUCTION}
+
+\section{INTRODUCTION}
+
+There are several simple methods existing for repeated data analysis, that is, ANOVA/MANOVA for repeated measures,
+but the limitation is the incapability of incorporating covariates.\\
+
+There are two types of approaches, linear mixed-effect models (LMM) and Generalized Estimating Equations (GEE), which are traditional and are widely used in practice now. Of note is that these two methods have different tendencies in model fitting depending on the study objectives. In particular, the LMM is an \textbf{\textit{individual-level}} approach by adopting random effects to capture the correlation between the observations of the same subject. On the other hand, GEE is a \textbf{\textit{population-level}} approach based on a quasi likelihood function and provides the population-averaged estimates of the parameters.\\
+
+The motivation of this presentation is to understand why GEE are referred as population model, and LMM as individual model.
+Both models have occurred in my MRTPA or ITP reviews and I wanted to understand these differences.
+
+\newpage
+\noindent 
+
+%page 2: %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section*{GENERALIZED ESTIMATING EQUATIONS (GEE)}
+
+\section{GEE AS MARGINAL MODEL}
+
+GENERALIZED ESTIMATING EQUATIONS (GEE)\\
+
+The GEE approach has become an extremely popular method for analyzing \textbf{\textit{discrete}} longitudinal data.
+It provides a flexible approach for modeling the mean and the pairwise within-subject association structure.
+It can handle inherently unbalanced designs and missing data with ease.\\
+GEE approach is computationally straightforward and has been implemented in existing, widely available statistical software.\\
+
+%http://support.sas.com/resources/papers/proceedings14/SAS166-2014.pdf
+The \textit{\textbf{marginal model}} is commonly used in analyzing longitudinal data when the population-averaged effects are
+of interest. To estimate the regression parameters in the marginal model, Liang and Zeger (1986) proposed the
+generalized estimating equations method, which is widely used.
+
+Suppose $y_{ij}$ represents the jth response on the ith subject with a vector of covariates $x_{ij}$.
+There are $n_{i}$ measurements on subject i and the maximum number of measurements per subject is
+T. 
+Suppose the responses on the ith subject are $Y_{i}=[y_{i1}, \ldots, y_{in_{i}}]'$ with corresponding means
+$\mu_{i}=[\mu_{i1}, \ldots, \mu_{in_{i}}]'$
+
+For generalized linear models, the marginal mean $\mu_{ij}$ of the response $y_{ij}$ is related to a linear predictor through a link
+function $g(\mu_{ij})= x'_{ij} \beta$ and the variance of $y_{ij}$ depends on the mean through a variance function $\nu(\mu_{ij})$.
+
+An estimate of the parameter $\beta$ in the marginal model can be obtained by solving the generalized \textit{\textbf{estimating equations}}
+
+
+\begin{equation}
+S(\beta)= \sum (\frac { \delta \mu_{i}'} {\delta \beta} ) V^{-1}_{i} (Y_{i} - \mu_{i} (\beta))=0
+\end{equation}
+
+where $V_{i}$, the working covariance matrix of $Y_{i}$, is specified through the working correlation matrix $R(\alpha)$. \\
+$V_{i}= \phi A^{1/2}_{i} R(\alpha) A^{1/2}_{i}$
+
+
+Here, $A_{i}$ is an $n_{i} \times n_{i}$ diagonal matrix whose jth diagonal element is $\nu(\mu_{ij})$, which is the value of the variance
+function at $\mu_{ij}$. If $R_{i}(\alpha)$ is the true correlation matrix of $Y_{i}$, then $V_{i}$ is the true covariance matrix of $Y_{i}$. 
+
+Only the mean and the covariance of $Y_{i}$ are required in the GEE method; a full specification of the joint distribution of
+the correlated responses is not needed. This is particularly convenient because the joint distribution for noncontinuous
+responses involves high-order associations and is complicated to specify.  Moreover, the regression parameter estimates are consistent even when the working covariance is incorrectly specified. Because of this, the GEE method is popular in situations where the marginal effect is of interest and the responses are not continuous. However, the GEE approach can lead to biased estimates when missing responses depend on previous responses. The weighted GEE method described in the following section can provide unbiased estimates.
+
+
+
+\\ \\
+
+The GEE estimators have the following attractive properties:
+
+\begin{enumerate}
+
+\item In many cases $\hat{\beta}$ is almost efficient when compared to MLE. For example, GEE has same form as likelihood equations for multivariate normal models and also certain models for discrete data
+\item $\hat{\beta}$ is consistent even if the covariance of $Y_{i}$ has been misspecified
+\item Standard errors for $\hat{\beta}$ can be obtained using the empirical or so called sandwich estimator
+
+\end{enumerate}
+
+Likelihood and Quasi Likelihood:\\
+%p33 of http://www.chime.ucla.edu/publications/docs/CHIME_Seminar_Liu_09202010.pdf
+
+The likelihood function of n random variables $X_{1}, \ldots X_{n}$ is defined to be the product of density of the n random variables
+f(X, $\Theta$):\\
+
+L($\Theta|X_{1}, X_{2}, \ldots X_{n}$) = $\prod$ ln(f($X_{i}|\Theta$) \\
+
+For the Quais Likelihood is not necessary to specify the complete distribution of $X_{i}$, only its first two moments.
+If $X_{1}, \ldots X_{n}$ have expectations $\mu_{i}$ and variances $\Phi$ V($\mu_{i}$) where V is a known function, the quasi-likelihood
+function is defined by:\\
+
+\begin{equation}
+\prod (\frac { \delta K (X_{i}, \mu_{i})} {\delta \mu_{i}} ) = (\frac { X_{i}-\mu_{i})} {\Phi V(\mu_{i})} ) 
+\end{equation}
+\\
+These are some properties of the Quasi-Likelihood:\\
+\begin{enumerate}
+\item Quasi-likelihood functions have similar properties to likelihood functions
+\item The estimating equations are similar to the ML estimating equations
+\item The variance is estimated using the sandwich estimate
+\item Limitation: perform sub-optimally for correlated data
+\end{enumerate}
+
+The Sandwich estimator.\\
+The \textit{Huber Sandwich Estimator} can be used to estimate the variance of the MLE when the underlying model is incorrect.  
+If the model is nearly correct, so are the usual standard errors, and robustification is unlikely to help much.  
+On the other hand, if the model is seriously in error, the sandwich may help on the variance side, but the parameters
+being estimated by the MLE are likely to be meaningless—except perhaps as descriptive statistics.
+
+
+\newpage
+\noindent 
+
+%page 3: %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section*{LINEAR MIXED MODELS (LMM)}
+
+\section{LMM AS CONDITIONAL MODEL}
+
+LINEAR MIXED MODELS (LMM)\\
+
+Linear mixed effects models are increasingly used for the analysis of longitudinal data.
+Introduction of random effects accounts for the correlation among repeated measures and allows for heterogeneity of the variance over time, but does not change the model for $E(Y_{ij} | X_{ij})$.\\
+
+The inclusion of random slopes or random trajectories induces a random effects covariance structure for 
+$Y_{i1} \ldots Y_{in}_{i}$ where the variances and correlations are a function of the times of measurement.\\
+
+In general, the random effects covariance structure is relatively parsimonious (e.g., random intercepts and slopes model has only four
+parameters, $\sigma{^2}_{b1}$, $\sigma{^2}_{b2}$, $\sigma_{b1}$, $\sigma{^2}_{b2}$, and $\sigma{^2})$.\\
+
+
+Linear mixed effects models are appealing because of:\\
+
+\begin{enumerate}
+
+\item Their flexibility in accommodating a variety of study designs, data models and hypotheses.
+\item Their flexibility in accommodating any degree of imbalance in the data (e.g., due to mistimed measurements and/or missing data)
+\item Their ability to parsimoniously model the variance and correlation
+\item Their ability to predict individual trajectories over time
+
+\end{enumerate}
+
+Note 1: Tests of fixed effects rely on asymptotic normality of the fixed effects (not $Y_{ij}$), need reasonable (say $>$ 30) number of subjects.\\
+
+Note 2: Missing observations can be accommodated easily, validity of results depends upon assumption about missingness.
+
+\newpage
+\noindent 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section*{EXAMPLES IN SAS: PROC GEE AND PROC MIXED}
+
+\section{EXAMPLES IN SAS: PROC GEE AND PROC MIXED}
+
+Happiness drug by gender over time:
+
+\url{http://www.chime.ucla.edu/publications/docs/CHIME_Seminar_Liu_09202010.pdf} \\
+
+\begin{center}
+ \begin{tabular}{||c c c c c c c c c c||} 
+ \hline
+ id & Gender & time1 & time2 & time3 & time4 & chem1 & chem2 & chem3 & chem4\\ [0.5ex] 
+ \hline\hline
+1 & 1 & 20 & 18 & 15 & 20 & 1000 & 1100 & 1200 & 1300 \\ [0.5ex] 
+2 & 2 & 22 & 24 & 18 & 22 & 1000 & 1000 & 1005 & 950 \\
+3 & 1 & 14 & 10 & 24 & 10 & 1000 & 1999 & 800  & 1700 \\
+4 & 1 & 38 & 34 & 32 & 34 & 1000 & 1100 & 1150 & 1100 \\
+5 & 2 & 25 & 29 & 25 & 29 & 1000 & 1000 & 1050 & 1010 \\
+6 & 2 & 30 & 28 & 26 & 14 & 1000 & 1100 & 1109 & 1500 \\ [1ex] 
+ \hline
+\end{tabular}
+\end{center}
+
+proc gee data=happiness;\\
+class id;\\
+model happy\_score= chem time gender / dist=nor;\\
+repeated subject = id / type = exch corrw;\\
+missmodel chem; \\
+run;\\
+\\
+
+proc mixed data=happiness;\\
+class id;\\
+model happy\_score = chem time gender / s;\\
+random intercept$\/$subject = id;\\
+run;\\
+quit;
+
+
+
+%page 3: %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section*{REFRENCES}
+
+\section{REFERENCES}
+
+\begin{enumerate}
+
+\item Weighted Methods for Analyzing Missing Data with the GEE Procedure \\
+{http://support.sas.com/resources/papers/proceedings14/SAS166-2014.pdf}
+
+\item Generalized Estimating Equations in Longitudinal Data Analysis: A Review and Recent Developments\\
+		\url{http://downloads.hindawi.com/archive/2014/303728.pdf}
+
+\item Applied Longitudinal Analysis, 2nd Edition by Garret Fitzmaurice et al.\\
+	Lecture slides in black and white (BIO226) at\\
+	\url{https://content.sph.harvard.edu/fitzmaur/ala2e/} 
+
+\item Marginal or conditional regression models for correlated non-normal data?\\
+	\url{https://besjournals.onlinelibrary.wiley.com/doi/abs/10.1111/2041-210X.12623}
+
+\item To GEE or Not to GEE Comparing Population Average and Mixed Models for Estimating the Associations Between Neighborhood Risk Factors and Health\\
+	\url{https://www.researchgate.net/publication/41895248_To_GEE_or_Not_to_GEE_Comparing_Population_Average_and_Mixed_Models_for_Estimating_the_Associations_Between_Neighborhood_Risk_Factors_and_Health}
+
+\item Analysis of long series of longitudinal ordinal data using marginalized models\\
+	\url{https://www.sciencedirect.com/science/article/pii/S016794731500167X}
+	
+\item Sandwich estimator\\
+		\url{https://www.stat.berkeley.edu/~census/mlesan.pdf}
+
+\item Weighted Methods for Analyzing Missing Data with the GEE Procedure\\
+	\url{http://support.sas.com/resources/papers/proceedings14/SAS166-2014.pdf}
+\end{enumerate}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\end{document} 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
