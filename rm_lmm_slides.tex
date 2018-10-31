@@ -1,0 +1,161 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\documentclass[mathserif]{beamer} 
+\usepackage{graphicx,hyperref,fdactpstats,url,verbatim,fancyvrb,bm}
+\def \red{\textcolor{red}}
+\def \red{\textcolor{blue}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}
+
+	\title{Linear Mixed Models}  
+	\author{Ruben Montes de Oca, MS.}
+	\institute{FDA/CTP/Statistics Branch I}
+	\date{October, 2018} 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\frame{\titlepage} 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\section{INTRODUCTION}
+\begin{frame}
+	\frametitle{INTRODUCTION}
+	
+There are a variety of models for analyzing correlated data, among them Linear Mixed Models (LMM) and 
+Generalized Estimating Equations (GEE) are two of the most popular that we find reviewing clinical trials. \\ \\
+
+The LMM are part of a broader class called Generalized Linear Models (GLM) where the response variable 
+distribution is not necessarily normal. \\ \\
+	
+LMM models are appealing because of their:
+
+\begin{itemize}
+\item flexibility for analyzing a variety of study designs
+\item flexibility of dealing with imbalance due to missing data
+\item ability to parsimoniously model the variance and correlation
+\item ability to predict individual trajectories over time
+\end{itemize}
+
+
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{MATHEMATICAL FORMULATION}
+\begin{frame}
+	\frametitle{MATHEMATICAL FORMULATION}
+	
+The LMM is defined by	
+
+	\begin{equation} 
+	\begin{gathered}
+	\textbf{Y}= \bm{X} \bm{\beta_{1}} + \bm{Z} \bm{u} + \bm{\varepsilon}
+	\end{gathered}
+	\end{equation}
+
+and 
+
+\item \bm{u} \sim \mathcal{N}(\bm{0,G}), \bm{\varepsilon} \sim \mathcal{N}(\bm{0,R})
+
+\vspace{3}
+
+The \textit{Fixed Factors} $\bm{X}$ are categorical variables that include all levels of interest in the study and the 
+\textit{Fixed Effects} are the $\bm{\beta}$ coefficients.
+
+\vspace{3}
+
+The Random Factors $\bm{Z}$ are categorical variables with levels that are randomly sampled from a population under study and 
+the Random Effects are the $\bm{u}$ coefficients.
+
+	 \end{frame}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{EXAMPLE}
+\begin{frame}
+	\frametitle{EXAMPLE: HAPPINES AND MEDICATION OVER TIME}
+		
+%\begin{center}
+ \begin{tabular}{||c c c c c||} 
+ \hline
+Id & Gender & Time & HappyScore & DosisMed \\ [0.5ex] 
+ \hline\hline
+1 & 1 & 0 & 20 & 1000 \\ [0.5ex] 
+1 & 1 & 2 & 18 & 1100 \\
+1 & 1 & 3 & 15 & 1200 \\
+1 & 1 & 6 & 20 & 1300 \\
+2 & 2 & 0 & 22 & 1000 \\
+\vdots & \vdots & \vdots & \vdots & \vdots \\
+6 & 2 & 2 & 28 & 1100 \\
+6 & 2 & 3 & 26 & 1109 \\
+6 & 2 & 6 & 14 & 1500 \\ [1ex] 
+\hline
+\end{tabular}
+%\end{center}
+
+\end{frame}
+	
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\section{EXAMPLE}
+\begin{frame}
+	%\frametitle{EXAMPLE}
+		
+\begin{figure}
+\centering
+\includegraphics[scale=0.40]{GEE.png}
+
+\includegraphics[scale=0.50]{LMM.png}
+\end{figure}
+
+\end{frame}
+	
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{REFERENCES}
+\begin{frame}
+	\frametitle{REFERENCES}
+		
+\begin{itemization}
+
+\item Weighted Methods for Analyzing Missing Data with the GEE Procedure \\
+{http://support.sas.com/resources/papers/proceedings14/SAS166-2014.pdf}
+
+\item To GEE or Not to GEE Comparing Population Average and Mixed Models for Estimating the Associations Between Neighborhood Risk Factors 
+and Health\\
+	\url{https://www.researchgate.net/publication/41895248_To_GEE_or_Not_to_GEE_Comparing_Population_Average_and_Mixed_Models_for_Estimating_
+	the_Associations_Between_Neighborhood_Risk_Factors_and_Health}
+	
+\item Generalized Estimating Equations in Longitudinal Data Analysis: A Review and Recent Developments\\
+		\url{http://downloads.hindawi.com/archive/2014/303728.pdf}
+
+\item Applied Longitudinal Analysis, 2nd Edition by Garret Fitzmaurice et al.\\
+	Lecture slides in black and white (BIO226) at\\
+	\url{https://content.sph.harvard.edu/fitzmaur/ala2e/} 
+\end{itemization}
+	
+\end{frame}
+	
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\section{REFERENCES}
+\begin{frame}
+	%\frametitle{REFERENCES}
+		
+\begin{itemization}
+
+\item Marginal or conditional regression models for correlated non-normal data?\\
+	\url{https://besjournals.onlinelibrary.wiley.com/doi/abs/10.1111/2041-210X.12623}
+
+
+
+\item Analysis of long series of longitudinal ordinal data using marginalized models\\
+	\url{https://www.sciencedirect.com/science/article/pii/S016794731500167X}
+	
+\item Sandwich estimator\\
+		\url{https://www.stat.berkeley.edu/~census/mlesan.pdf}
+
+
+\end{itemization}
+
+\end{frame}
+	
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%	
+\end{document}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
