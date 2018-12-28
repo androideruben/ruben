@@ -1,0 +1,28 @@
+/input 		variables=7.
+		format= free.
+/variable	names=nurse1, nurse2, nurse3, nurse4, 
+		      nurse5, nurse6, nurse7.
+/design		names= patients, nurses.
+		levels= 20, 7.
+		model= 'p, n'.
+/end
+2 2 2 2 2 2 2 
+2 2 2 2 2 2 2
+3 2 3 3 2 3 4
+4 3 3 3 3 3 4
+2 2 3 2 2 2 2
+3 2 3 3 3 3 3
+3 2 3 3 3 2 3
+3 2 3 3 3 2 2
+3 2 3 3 3 3 3
+2 2 2 2 1 2 2
+1 1 2 2 2 1 1
+2 2 2 2 2 2 2
+2 1 2 1 1 1 2
+2 1 2 2 1 2 2
+2 3 2 2 2 2 2
+2 2 2 2 2 2 2
+1 1 1 1 1 1 1
+2 2 1 2 1 2 2
+3 2 3 3 3 3 3
+2 2 2 2 2 2 2
